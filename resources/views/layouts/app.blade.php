@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Blog Platform')</title>
+    <title>@yield('title', 'Contently')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +28,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <a href="{{ route('home') }}" style="font-size: 1.5rem; font-weight: bold;">Blogs ba?</a>
+            <a href="{{ route('home') }}" style="font-size: 1.5rem; font-weight: bold;">Contently</a>
             
             <div class="nav-links">
                 <a href="{{ route('articles.index') }}">Articles</a>
