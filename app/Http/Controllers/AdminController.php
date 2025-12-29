@@ -14,6 +14,8 @@ class AdminController extends Controller
             'total_articles' => Article::count(),
             'published_articles' => Article::where('status', 'published')->count(),
             'draft_articles' => Article::where('status', 'draft')->count(),
+            'total_books' => Book::count(),
+            'total_images' => Image::count(),
             'total_users' => User::count(),
         ];
         
@@ -30,5 +32,17 @@ class AdminController extends Controller
     {
         $users = User::withCount('articles')->paginate(20);
         return view('admin.users', compact('users'));
+    }
+
+        public function books()
+    {
+        $books = Book::with('user')->latest()->paginate(20);
+        return view('admin.books', compact('books'));
+    }
+
+    public function images()
+    {
+        $images = Image::with('user')->latest()->paginate(20);
+        return view('admin.images', compact('images'));
     }
 }
