@@ -12,8 +12,8 @@ class ImageController extends Controller
 {
     public function index()
     {
-        $images = Image::published()
-            ->with(['user', 'categories'])
+        $images = Image::with(['user', 'categories'])
+            ->where('status', 'published')  // Add quotes around 'published'
             ->latest()
             ->paginate(12);
         

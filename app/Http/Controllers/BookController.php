@@ -10,15 +10,15 @@ use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
-    public function index()
-    {
-        $books = Book::published()
-            ->with(['user', 'categories'])
-            ->latest()
-            ->paginate(12);
-        
-        return view('books.index', compact('books'));
-    }
+   public function index()
+{
+    $books = Book::with(['user', 'categories'])
+        ->where('status', 'published')  // Add quotes around 'published'
+        ->latest()
+        ->paginate(12);
+    
+    return view('books.index', compact('books'));
+}
 
     public function create()
     {
