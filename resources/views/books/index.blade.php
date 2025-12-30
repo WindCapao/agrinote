@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'All Books - Contently')
+@section('title', 'Book Collection - Contently')
 
 @section('content')
 <div style="margin-bottom: 2rem;">
-    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">📚 Book Collection</h1>
+    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Book Collection</h1>
     
     @auth
         <a href="{{ route('books.create') }}" class="btn">Add New Book</a>

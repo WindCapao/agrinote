@@ -25,44 +25,32 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
+        <!-- Navigation -->
+        <nav class="navbar">
         <div class="container">
             <a href="{{ route('home') }}" style="font-size: 1.5rem; font-weight: bold;">Contently</a>
             
-                <div class="nav-links">
-        <a href="{{ route('articles.index') }}">Articles</a>
-        <a href="{{ route('books.index') }}">Books</a>
-        <a href="{{ route('images.index') }}">Images</a>
-        
-        @auth
-            <!-- Dropdown for "Create New" -->
-            <div style="position: relative; display: inline-block;" 
-                onmouseenter="this.querySelector('.dropdown-menu').style.display='block'"
-                onmouseleave="this.querySelector('.dropdown-menu').style.display='none'">
-                <a href="#" style="cursor: pointer;">Create New ▼</a>
-                <div class="dropdown-menu" style="display: none; position: absolute; background: white; min-width: 160px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 0.5rem; margin-top: 0.5rem; z-index: 1000;">
-                    <a href="{{ route('articles.create') }}" style="color: #333; padding: 0.75rem 1rem; display: block; text-decoration: none;">📝 Write Article</a>
-                    <a href="{{ route('books.create') }}" style="color: #333; padding: 0.75rem 1rem; display: block; text-decoration: none;">📚 Add Book</a>
-                    <a href="{{ route('images.create') }}" style="color: #333; padding: 0.75rem 1rem; display: block; text-decoration: none;">🖼️ Upload Image</a>
-                </div>
+            <div class="nav-links">
+                <a href="{{ route('articles.index') }}">Articles</a>
+                <a href="{{ route('books.index') }}">Books</a>
+                <a href="{{ route('images.index') }}">Images</a>
+                
+                @auth
+                    @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}">Admin Panel</a>
+                    @endif
+                    
+                    <span style="margin: 0 1rem;">{{ Auth::user()->name }}</span>
+                    
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: 500;">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('register') }}">Register</a>
+                @endauth
             </div>
-            
-            @if(Auth::user()->isAdmin())
-                <a href="{{ route('admin.dashboard') }}">Admin Panel</a>
-            @endif
-            
-            <span style="margin: 0 1rem;">{{ Auth::user()->name }}</span>
-            
-            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                @csrf
-                <button type="submit" style="background: none; border: none; color: white; cursor: pointer; font-weight: 500;">Logout</button>
-            </form>
-        @else
-            <a href="{{ route('login') }}">Login</a>
-            <a href="{{ route('register') }}">Register</a>
-        @endauth
-    </div>
         </div>
     </nav>
 

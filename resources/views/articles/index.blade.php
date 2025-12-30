@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'All Articles')
+@section('title', 'Latest Articles - Contently')
 
 @section('content')
 <div style="margin-bottom: 2rem;">

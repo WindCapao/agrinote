@@ -4,7 +4,7 @@
 
 @section('content')
 <div style="margin-bottom: 2rem;">
-    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">🖼️ Image Gallery</h1>
+    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Image Gallery</h1>
     
     @auth
         <a href="{{ route('images.create') }}" class="btn">Upload New Image</a>
