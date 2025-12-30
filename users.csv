@@ -1,0 +1,2 @@
+"id";"name";"email";"role";"email_verified_at";"password";"remember_token";"created_at";"updated_at"
+1;"Test User";"test@test.com";"user";"";"$2y$12$b8gtmi5PKPtxm/j8LXjHzeHX.tjckxyzfXGjPkPlFAu/SqF7riyzO";"";"2025-12-29 14:44:53";"2025-12-29 14:44:53"
