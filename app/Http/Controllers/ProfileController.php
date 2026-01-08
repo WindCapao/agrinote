@@ -11,36 +11,28 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+
+    public function edit(Request $request): View  //show profile edit form
     {
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request): RedirectResponse //update profile info
     {
-        $request->user()->fill($request->validated());
+        $request->user()->fill($request->validated());  //fill user model with validated data
 
-        if ($request->user()->isDirty('email')) {
+        if ($request->user()->isDirty('email')) {  // If email changed, require verification
             $request->user()->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $request->user()->save();  //save updated user info
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');  //redirect back with status
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse  //delete user account
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -48,11 +40,11 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        Auth::logout(); //log out user
 
-        $user->delete();
+        $user->delete();  //delete user
 
-        $request->session()->invalidate();
+        $request->session()->invalidate();  //delete session
         $request->session()->regenerateToken();
 
         return Redirect::to('/');

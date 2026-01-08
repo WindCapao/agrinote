@@ -13,7 +13,7 @@ class BookController extends Controller
    public function index()
 {
     $books = Book::with(['user', 'categories'])
-        ->where('status', 'published')  // Add quotes around 'published'
+        ->where('status', 'published')  
         ->latest()
         ->paginate(12);
     

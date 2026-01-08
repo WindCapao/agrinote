@@ -15,10 +15,7 @@ use Illuminate\View\View;
 
 class NewPasswordController extends Controller
 {
-    /**
-     * Display the password reset view.
-     */
-    public function create(Request $request): View
+    public function create(Request $request): View //show reset password form
     {
         return view('auth.reset-password', ['request' => $request]);
     }
@@ -28,7 +25,7 @@ class NewPasswordController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse //process new password
     {
         $request->validate([
             'token' => ['required'],

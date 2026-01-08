@@ -10,98 +10,81 @@ use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of articles (homepage)
-     */
-    public function index()
+
+    public function index() //list all articles
     {
-        $articles = Article::published()
-            ->with(['user', 'categories'])
-            ->latest()
-            ->paginate(10);
+        $articles = Article::published()        //published lang makukuha
+            ->with(['user', 'categories'])      //load w/ user and categories
+            ->latest()                          //latest first
+            ->paginate(10);                     //10 articles per page
         
-        return view('articles.index', compact('articles'));
+        return view('articles.index', compact('articles'));  //send to view
     }
 
-    /**
-     * Show the form for creating a new article
-     */
-    public function create()
+    public function create() //show create article form
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
+        if (!Auth::check()) {                       //check if logged in
+            return redirect()->route('login');      //if not, redirect to login
         }
 
-        $categories = Category::all();
+        $categories = Category::all();              //get all categories
         return view('articles.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created article in database
-     */
-    public function store(Request $request)
+    public function store(Request $request) //save new article
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string|min:100',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'categories' => 'required|array|min:1',
-            'categories.*' => 'exists:categories,id',
-            'status' => 'required|in:draft,published'
+        $validated = $request->validate([           //validate data
+            'title' => 'required|string|max:255',   //title is required, max 255 chars
+            'content' => 'required|string|min:100', //content required, min 100 chars
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',  //optional image
+            'categories' => 'required|array|min:1',  //at least one category
+            'categories.*' => 'exists:categories,id', //each category must exist
+            'status' => 'required|in:draft,published'  //status must be draft or published
         ]);
 
-        $imagePath = null;
-        if ($request->hasFile('featured_image')) {
+        $imagePath = null;                        //handle image upload
+        if ($request->hasFile('featured_image')) {  //Store in storage/app/public/articles/
             $imagePath = $request->file('featured_image')->store('articles', 'public');
         }
-
-        $article = Article::create([
+ 
+        $article = Article::create([            //create article in db
             'title' => $validated['title'],
             'content' => $validated['content'],
             'featured_image' => $imagePath,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::id(),            //current user as author
             'status' => $validated['status']
         ]);
 
-        $article->categories()->attach($validated['categories']);
+        $article->categories()->attach($validated['categories']);   //attach categories
 
         return redirect()
-            ->route('articles.show', $article)
-            ->with('success', 'Article created successfully!');
+            ->route('articles.show', $article)  //redirect to article view
+            ->with('success', 'Article created successfully!');  //success message
     }
 
-    /**
-     * Display a single article
-     */
-    public function show(Article $article)
+    public function show(Article $article) //view single article
     {
-        $article->load(['user', 'categories']);
+        $article->load(['user', 'categories']);   //load user and categories
         return view('articles.show', compact('article'));
     }
 
-    /**
-     * Show the form for editing an article
-     */
-    public function edit(Article $article)
+    public function edit(Article $article) //show edit article form
     {
-        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {
+        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {  //check ownership or admin
             abort(403, 'Unauthorized action.');
         }
 
-        $categories = Category::all();
-        return view('articles.edit', compact('article', 'categories'));
+        $categories = Category::all();  //get all categories
+        return view('articles.edit', compact('article', 'categories'));  //send to view
     }
 
-    /**
-     * Update the article in database
-     */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, Article $article) //save edited article
     {
-        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {
+        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {  //check ownership or admin
             abort(403);
         }
 
-        $validated = $request->validate([
+        $validated = $request->validate([       //validate data
             'title' => 'required|string|max:255',
             'content' => 'required|string|min:100',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -109,38 +92,38 @@ class ArticleController extends Controller
             'status' => 'required|in:draft,published'
         ]);
 
-        if ($request->hasFile('featured_image')) {
+        if ($request->hasFile('featured_image')) {    //handle image replacement
             if ($article->featured_image) {
                 Storage::disk('public')->delete($article->featured_image);
             }
-            $validated['featured_image'] = $request->file('featured_image')->store('articles', 'public');
+            $validated['featured_image'] = $request->file('featured_image')->store('articles', 'public'); //store new image
         }
 
-        $article->update($validated);
-        $article->categories()->sync($validated['categories']);
+        $article->update($validated);  //update article and db
+        $article->categories()->sync($validated['categories']);  //sync categories
 
         return redirect()
-            ->route('articles.show', $article)
-            ->with('success', 'Article updated!');
+            ->route('articles.show', $article)  //redirect to article view
+            ->with('success', 'Article updated!');  //success message
     }
 
     /**
      * Remove article from database
      */
-    public function destroy(Article $article)
+    public function destroy(Article $article) //delete article
     {
         if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
         if ($article->featured_image) {
-            Storage::disk('public')->delete($article->featured_image);
+            Storage::disk('public')->delete($article->featured_image); //delete image from storage
         }
 
         $article->delete();
 
         return redirect()
-            ->route('articles.index')
-            ->with('success', 'Article deleted!');
+            ->route('articles.index')  //redirect to articles list
+            ->with('success', 'Article deleted!');  //success message
     }
 }
