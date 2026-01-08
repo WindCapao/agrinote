@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $image->title . ' - Contently')
+@section('title', $image->title . 'All Images - Contently')
 
 @section('content')
 <div style="max-width: 1200px; margin: 0 auto;">
@@ -27,7 +27,7 @@
         
         @if($image->photographer)
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                📸 <span>{{ $image->photographer }}</span>
+            <span>{{ $image->photographer }}</span>
             </div>
         @endif
         

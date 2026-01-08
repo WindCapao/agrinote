@@ -4,7 +4,7 @@
 
 @section('content')
 <div style="max-width: 800px; margin: 0 auto;">
-    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">🖼️ Edit Image</h1>
+    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Edit Image</h1>
     
     <form method="POST" action="{{ route('images.update', $image) }}" enctype="multipart/form-data">
         @csrf

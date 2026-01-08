@@ -45,7 +45,7 @@
                 <!-- Photographer -->
                 @if($image->photographer)
                     <p style="color: #9ca3af; font-size: 0.75rem; margin-bottom: 0.5rem;">
-                        📸 {{ $image->photographer }}
+                        {{ $image->photographer }}
                     </p>
                 @endif
                 
