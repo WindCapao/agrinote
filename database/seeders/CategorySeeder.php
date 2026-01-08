@@ -16,6 +16,10 @@ class CategorySeeder extends Seeder
             ['name' => 'Food', 'slug' => 'food'],
             ['name' => 'Health', 'slug' => 'health'],
             ['name' => 'Business', 'slug' => 'business'],
+            ['name' => 'Education', 'slug' => 'education'],
+            ['name' => 'Entertainment', 'slug' => 'entertainment'],
+            ['name' => 'Sports', 'slug' => 'sports'],
+            ['name' => 'Science', 'slug' => 'science'],
         ];
 
         foreach ($categories as $category) {
