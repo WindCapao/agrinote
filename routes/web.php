@@ -7,6 +7,11 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// additional 
+Route::get('/dashboard', function () {
+    return redirect()->route('books.index');
+})->middleware(['auth'])->name('dashboard');
+
 // PUBLIC ROUTES (anyone can access)
 Route::get('/', [ArticleController::class, 'index'])->name('home');
 
