@@ -7,123 +7,194 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class ArticleController extends Controller
 {
-
-    public function index() //list all articles
+    /**
+     * Apply authentication middleware
+     */
+    public function __construct()
     {
-        $articles = Article::published()        //published lang makukuha
-            ->with(['user', 'categories'])      //load w/ user and categories
-            ->latest()                          //latest first
-            ->paginate(10);                     //10 articles per page
-        
-        return view('articles.index', compact('articles'));  //send to view
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
-    public function create() //show create article form
+    /**
+     * Display a listing of published articles
+     */
+    public function index()
     {
-        if (!Auth::check()) {                       //check if logged in
-            return redirect()->route('login');      //if not, redirect to login
-        }
+        $articles = Article::published()
+            ->with(['user', 'categories'])
+            ->latest()
+            ->paginate(10);
+        
+        return view('articles.index', compact('articles'));
+    }
 
-        $categories = Category::all();              //get all categories
+    /**
+     * Show the form for creating a new article
+     */
+    public function create()
+    {
+        $categories = Category::all();
         return view('articles.create', compact('categories'));
     }
 
-    public function store(Request $request) //save new article
+    /**
+     * Store a newly created article
+     */
+    public function store(Request $request)
     {
-        $validated = $request->validate([           //validate data
-            'title' => 'required|string|max:255',   //title is required, max 255 chars
-            'content' => 'required|string|min:100', //content required, min 100 chars
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',  //optional image
-            'categories' => 'required|array|min:1',  //at least one category
-            'categories.*' => 'exists:categories,id', //each category must exist
-            'status' => 'required|in:draft,published'  //status must be draft or published
-        ]);
-
-        $imagePath = null;                        //handle image upload
-        if ($request->hasFile('featured_image')) {  //Store in storage/app/public/articles/
-            $imagePath = $request->file('featured_image')->store('articles', 'public');
-        }
- 
-        $article = Article::create([            //create article in db
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'featured_image' => $imagePath,
-            'user_id' => Auth::id(),            //current user as author
-            'status' => $validated['status']
-        ]);
-
-        $article->categories()->attach($validated['categories']);   //attach categories
-
-        return redirect()
-            ->route('articles.show', $article)  //redirect to article view
-            ->with('success', 'Article created successfully!');  //success message
-    }
-
-    public function show(Article $article) //view single article
-    {
-        $article->load(['user', 'categories']);   //load user and categories
-        return view('articles.show', compact('article'));
-    }
-
-    public function edit(Article $article) //show edit article form
-    {
-        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {  //check ownership or admin
-            abort(403, 'Unauthorized action.');
-        }
-
-        $categories = Category::all();  //get all categories
-        return view('articles.edit', compact('article', 'categories'));  //send to view
-    }
-
-    public function update(Request $request, Article $article) //save edited article
-    {
-        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {  //check ownership or admin
-            abort(403);
-        }
-
-        $validated = $request->validate([       //validate data
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string|min:100',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'categories' => 'required|array|min:1',
+            'categories.*' => 'exists:categories,id',
             'status' => 'required|in:draft,published'
         ]);
 
-        if ($request->hasFile('featured_image')) {    //handle image replacement
-            if ($article->featured_image) {
-                Storage::disk('public')->delete($article->featured_image);
+        DB::beginTransaction();
+        
+        try {
+            $imagePath = null;
+            if ($request->hasFile('featured_image')) {
+                $imagePath = $request->file('featured_image')->store('articles', 'public');
             }
-            $validated['featured_image'] = $request->file('featured_image')->store('articles', 'public'); //store new image
+     
+            $article = Article::create([
+                'title' => $validated['title'],
+                'content' => $validated['content'],
+                'featured_image' => $imagePath,
+                'user_id' => Auth::id(),
+                'status' => $validated['status']
+            ]);
+
+            $article->categories()->attach($validated['categories']);
+            
+            DB::commit();
+
+            return redirect()
+                ->route('articles.show', $article)
+                ->with('success', 'Article created successfully!');
+                
+        } catch (Exception $e) {
+            DB::rollBack();
+            
+            // Clean up uploaded image if article creation failed
+            if (isset($imagePath) && $imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+            
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create article. Please try again.']);
         }
-
-        $article->update($validated);  //update article and db
-        $article->categories()->sync($validated['categories']);  //sync categories
-
-        return redirect()
-            ->route('articles.show', $article)  //redirect to article view
-            ->with('success', 'Article updated!');  //success message
     }
 
     /**
-     * Remove article from database
+     * Display the specified article
      */
-    public function destroy(Article $article) //delete article
+    public function show(Article $article)
+    {
+        $article->load(['user', 'categories']);
+        return view('articles.show', compact('article'));
+    }
+
+    /**
+     * Show the form for editing the specified article
+     */
+    public function edit(Article $article)
     {
         if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {
-            abort(403);
+            abort(403, 'Unauthorized action.');
         }
 
-        if ($article->featured_image) {
-            Storage::disk('public')->delete($article->featured_image); //delete image from storage
+        $categories = Category::all();
+        return view('articles.edit', compact('article', 'categories'));
+    }
+
+    /**
+     * Update the specified article
+     */
+    public function update(Request $request, Article $article)
+    {
+        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
         }
 
-        $article->delete();
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|min:100',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'categories' => 'required|array|min:1',
+            'categories.*' => 'exists:categories,id',
+            'status' => 'required|in:draft,published'
+        ]);
 
-        return redirect()
-            ->route('articles.index')  //redirect to articles list
-            ->with('success', 'Article deleted!');  //success message
+        DB::beginTransaction();
+        
+        try {
+            $oldImage = $article->featured_image;
+            
+            if ($request->hasFile('featured_image')) {
+                $validated['featured_image'] = $request->file('featured_image')
+                    ->store('articles', 'public');
+            }
+
+            $article->update($validated);
+            $article->categories()->sync($validated['categories']);
+            
+            // Delete old image only after successful update
+            if ($request->hasFile('featured_image') && $oldImage) {
+                Storage::disk('public')->delete($oldImage);
+            }
+            
+            DB::commit();
+
+            return redirect()
+                ->route('articles.show', $article)
+                ->with('success', 'Article updated successfully!');
+                
+        } catch (Exception $e) {
+            DB::rollBack();
+            
+            // Clean up new image if update failed
+            if (isset($validated['featured_image'])) {
+                Storage::disk('public')->delete($validated['featured_image']);
+            }
+            
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update article. Please try again.']);
+        }
+    }
+
+    /**
+     * Remove the specified article
+     */
+    public function destroy(Article $article)
+    {
+        if (Auth::id() !== $article->user_id && !Auth::user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            if ($article->featured_image) {
+                Storage::disk('public')->delete($article->featured_image);
+            }
+
+            $article->delete();
+
+            return redirect()
+                ->route('articles.index')
+                ->with('success', 'Article deleted successfully!');
+                
+        } catch (Exception $e) {
+            return back()
+                ->withErrors(['error' => 'Failed to delete article. Please try again.']);
+        }
     }
 }

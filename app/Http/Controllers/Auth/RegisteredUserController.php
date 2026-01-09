@@ -14,10 +14,12 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-
+    /**
+     * Display the registration view
+     */
     public function create(): View
     {
-        return view('auth.register'); //show registration form
+        return view('auth.register');
     }
 
     /**
@@ -36,7 +38,8 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), //encrypt password
+            'password' => Hash::make($request->password),
+            'role' => 'user', // Set default role as 'user'
         ]);
 
         event(new Registered($user));

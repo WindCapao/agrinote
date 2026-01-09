@@ -11,28 +11,36 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-
-    public function edit(Request $request): View  //show profile edit form
+    /**
+     * Show profile edit form
+     */
+    public function edit(Request $request): View
     {
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
     }
 
-    public function update(ProfileUpdateRequest $request): RedirectResponse //update profile info
+    /**
+     * Update profile information
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());  //fill user model with validated data
+        $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {  // If email changed, require verification
+        if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
-        $request->user()->save();  //save updated user info
+        $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');  //redirect back with status
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    public function destroy(Request $request): RedirectResponse  //delete user account
+    /**
+     * Delete user account
+     */
+    public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -40,11 +48,11 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout(); //log out user
+        Auth::logout();
 
-        $user->delete();  //delete user
+        $user->delete();
 
-        $request->session()->invalidate();  //delete session
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return Redirect::to('/');

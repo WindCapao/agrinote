@@ -4,7 +4,7 @@
 
 @section('content')
 <div style="max-width: 800px; margin: 0 auto;">
-    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">📚 Add New Book</h1>
+    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Add New Book</h1>
     
     <form method="POST" action="{{ route('books.store') }}" enctype="multipart/form-data">
         @csrf
