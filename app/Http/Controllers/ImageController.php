@@ -13,14 +13,6 @@ use Exception;
 class ImageController extends Controller
 {
     /**
-     * Apply authentication middleware
-     */
-    public function __construct()
-    {
-        $this->middleware('auth')->except(['index', 'show']);
-    }
-
-    /**
      * Display a listing of published images
      */
     public function index()

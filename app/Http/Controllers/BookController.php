@@ -13,14 +13,6 @@ use Exception;
 class BookController extends Controller
 {
     /**
-     * Apply authentication middleware
-     */
-    public function __construct()
-    {
-        $this->middleware('auth')->except(['index', 'show']);
-    }
-
-    /**
      * Display a listing of published books
      */
     public function index()

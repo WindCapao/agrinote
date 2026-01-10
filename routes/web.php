@@ -5,15 +5,16 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;  // ADD THIS
 use Illuminate\Support\Facades\Route;
 
 // additional 
 Route::get('/dashboard', function () {
-    return redirect()->route('books.index');
+    return redirect()->route('home');  // Changed to redirect to home instead of books
 })->middleware(['auth'])->name('dashboard');
 
 // PUBLIC ROUTES (anyone can access)
-Route::get('/', [ArticleController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');  // CHANGED: Now uses HomeController
 
 // Articles
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');

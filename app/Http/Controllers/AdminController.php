@@ -11,15 +11,6 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     /**
-     * Apply admin middleware to all methods
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('admin');
-    }
-
-    /**
      * Display admin dashboard with statistics
      */
     public function dashboard()
