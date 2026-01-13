@@ -30,7 +30,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get(); // CHANGED: Added orderBy
         return view('articles.create', compact('categories'));
     }
 
@@ -124,7 +124,7 @@ class ArticleController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $categories = Category::all();
+        $categories = Category::orderBy('name')->get(); // CHANGED: Added orderBy
         return view('articles.edit', compact('article', 'categories'));
     }
 

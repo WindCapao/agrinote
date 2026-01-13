@@ -151,27 +151,34 @@
             </div>
         </div>
         
-        <!-- Categories -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Categories <span style="color: #dc2626;">*</span>
-            </label>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
-                @foreach($categories as $category)
-                    <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" 
-                               name="categories[]" 
-                               value="{{ $category->id }}"
-                               {{ in_array($category->id, old('categories', $image->categories->pluck('id')->toArray())) ? 'checked' : '' }}
-                               style="margin-right: 0.5rem; width: 18px; height: 18px; cursor: pointer;">
-                        <span>{{ $category->name }}</span>
-                    </label>
-                @endforeach
+          <!-- Categories with checkboxes -->
+<div style="margin-bottom: 2rem;">
+    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Categories</label>
+    <div style="border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 1rem; max-height: 200px; overflow-y: auto; background: white;">
+        @php
+            $selectedCategories = old('categories', $image->categories->pluck('id')->toArray());
+        @endphp
+        
+        @foreach($categories as $category)
+            <div style="margin-bottom: 0.5rem;">
+                <label style="display: flex; align-items: center; cursor: pointer; padding: 0.25rem 0;">
+                    <input type="checkbox" 
+                           name="categories[]" 
+                           value="{{ $category->id }}" 
+                           {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}
+                           style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
+                    <span style="font-size: 0.95rem;">{{ $category->name }}</span>
+                </label>
             </div>
-            @error('categories')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
+        @endforeach
+    </div>
+    @error('categories')
+        <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</div>
+    @enderror
+    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">
+        Select one or more categories from the list above
+    </p>
+</div>
         
         <!-- Status -->
         <div style="margin-bottom: 1.5rem;">

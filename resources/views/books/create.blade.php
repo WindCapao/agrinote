@@ -200,26 +200,25 @@
                 Accepted formats: JPEG, PNG, JPG. Max size: 2MB
             </p>
         </div>
-        
-        <!-- Categories -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Categories <span style="color: #dc2626;">*</span>
-            </label>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                    <!-- Categories with checkboxes -->
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Categories</label>
+            <div style="border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 1rem; max-height: 200px; overflow-y: auto;">
                 @foreach($categories as $category)
-                    <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" 
-                               name="categories[]" 
-                               value="{{ $category->id }}"
-                               {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}
-                               style="margin-right: 0.5rem; width: 18px; height: 18px; cursor: pointer;">
-                        <span>{{ $category->name }}</span>
-                    </label>
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" 
+                                name="categories[]" 
+                                value="{{ $category->id }}" 
+                                {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}
+                                style="margin-right: 0.5rem;">
+                            {{ $category->name }}
+                        </label>
+                    </div>
                 @endforeach
             </div>
             @error('categories')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</div>
             @enderror
         </div>
         

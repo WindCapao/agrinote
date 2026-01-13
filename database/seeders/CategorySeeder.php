@@ -20,10 +20,23 @@ class CategorySeeder extends Seeder
             ['name' => 'Entertainment', 'slug' => 'entertainment'],
             ['name' => 'Sports', 'slug' => 'sports'],
             ['name' => 'Science', 'slug' => 'science'],
+            ['name' => 'Art', 'slug' => 'art'],
+            ['name' => 'Music', 'slug' => 'music'],
+            ['name' => 'Fashion', 'slug' => 'fashion'],
+            ['name' => 'Finance', 'slug' => 'finance'],
+            ['name' => 'Marketing', 'slug' => 'marketing'],
+            ['name' => 'Design', 'slug' => 'design'],
+            ['name' => 'Photography', 'slug' => 'photography'],
+            ['name' => 'Writing', 'slug' => 'writing'],
+            ['name' => 'History', 'slug' => 'history'],
+            ['name' => 'Culture', 'slug' => 'culture'],
         ];
 
         foreach ($categories as $category) {
-            Category::create($category);
+            Category::updateOrCreate(
+                ['slug' => $category['slug']], // Find by slug
+                ['name' => $category['name']]   // Update or create with this data
+            );
         }
     }
 }

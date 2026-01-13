@@ -93,25 +93,29 @@
                 @enderror
             </div>
 
-            <!-- Categories -->
-            <div style="margin-bottom: 2rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Categories</label>
-                <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                    @foreach($categories as $category)
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+         <!-- Categories with checkboxes -->
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Categories</label>
+            <div style="border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 1rem; max-height: 200px; overflow-y: auto;">
+                @foreach($categories as $category)
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
                             <input type="checkbox" 
-                                   name="categories[]" 
-                                   value="{{ $category->id }}"
-                                   {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
-                            <span>{{ $category->name }}</span>
+                                name="categories[]" 
+                                value="{{ $category->id }}" 
+                                {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}
+                                style="margin-right: 0.5rem;">
+                            {{ $category->name }}
                         </label>
-                    @endforeach
-                </div>
-                @error('categories')
-                    <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</div>
-                @enderror
+                    </div>
+                @endforeach
             </div>
+            @error('categories')
+                <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</div>
+            @enderror
+        </div>
 
+        
             <!-- Buttons -->
             <div style="display: flex; gap: 1rem;">
                 <button type="submit"
