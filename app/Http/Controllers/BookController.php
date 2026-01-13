@@ -17,10 +17,10 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = Book::with(['user', 'categories'])
-            ->where('status', 'published')  
+        $books = Book::published()
+            ->with(['user', 'categories'])
             ->latest()
-            ->paginate(12);
+            ->paginate(10);
         
         return view('books.index', compact('books'));
     }
@@ -39,19 +39,28 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Base validation rules
+        $rules = [
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'isbn' => 'nullable|string|max:50|unique:books,isbn',
+            'isbn' => 'nullable|string|max:20',
             'publisher' => 'nullable|string|max:255',
-            'publication_year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
+            'publication_year' => 'nullable|integer|min:1000|max:' . (date('Y') + 5),
             'pages' => 'nullable|integer|min:1',
-            'description' => 'required|string|min:50',
+            'description' => 'required|string|min:100',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
-            'status' => 'required|in:draft,published'
-        ]);
+        ];
+
+        // Status validation depends on user role
+        if (Auth::user()->isAdmin()) {
+            $rules['status'] = 'required|in:draft,pending,published,rejected';
+        } else {
+            $rules['status'] = 'required|in:draft,pending';
+        }
+
+        $validated = $request->validate($rules);
 
         DB::beginTransaction();
         
@@ -60,7 +69,7 @@ class BookController extends Controller
             if ($request->hasFile('cover_image')) {
                 $imagePath = $request->file('cover_image')->store('books', 'public');
             }
-
+     
             $book = Book::create([
                 'title' => $validated['title'],
                 'author' => $validated['author'],
@@ -78,20 +87,25 @@ class BookController extends Controller
             
             DB::commit();
 
+            $message = $validated['status'] === 'pending' 
+                ? 'Book submitted for approval!' 
+                : 'Book created successfully!';
+
             return redirect()
                 ->route('books.show', $book)
-                ->with('success', 'Book added successfully!');
+                ->with('success', $message);
                 
         } catch (Exception $e) {
             DB::rollBack();
             
+            // Clean up uploaded image if book creation failed
             if (isset($imagePath) && $imagePath) {
                 Storage::disk('public')->delete($imagePath);
             }
             
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Failed to add book. Please try again.']);
+                ->withErrors(['error' => 'Failed to create book. Please try again.']);
         }
     }
 
@@ -100,6 +114,13 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
+        // Allow viewing if: published, or owner, or admin
+        if ($book->status !== 'published' 
+            && Auth::id() !== $book->user_id 
+            && !Auth::user()?->isAdmin()) {
+            abort(403, 'This book is not available.');
+        }
+
         $book->load(['user', 'categories']);
         return view('books.show', compact('book'));
     }
@@ -126,19 +147,28 @@ class BookController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $validated = $request->validate([
+        // Base validation rules
+        $rules = [
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'isbn' => 'nullable|string|max:50|unique:books,isbn,' . $book->id,
+            'isbn' => 'nullable|string|max:20',
             'publisher' => 'nullable|string|max:255',
-            'publication_year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
+            'publication_year' => 'nullable|integer|min:1000|max:' . (date('Y') + 5),
             'pages' => 'nullable|integer|min:1',
-            'description' => 'required|string|min:50',
+            'description' => 'required|string|min:100',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
-            'status' => 'required|in:draft,published'
-        ]);
+        ];
+
+        // Status validation depends on user role
+        if (Auth::user()->isAdmin()) {
+            $rules['status'] = 'required|in:draft,pending,published,rejected';
+        } else {
+            $rules['status'] = 'required|in:draft,pending';
+        }
+
+        $validated = $request->validate($rules);
 
         DB::beginTransaction();
         
@@ -153,19 +183,25 @@ class BookController extends Controller
             $book->update($validated);
             $book->categories()->sync($validated['categories']);
             
+            // Delete old image only after successful update
             if ($request->hasFile('cover_image') && $oldImage) {
                 Storage::disk('public')->delete($oldImage);
             }
             
             DB::commit();
 
+            $message = $validated['status'] === 'pending' 
+                ? 'Book submitted for approval!' 
+                : 'Book updated successfully!';
+
             return redirect()
                 ->route('books.show', $book)
-                ->with('success', 'Book updated successfully!');
+                ->with('success', $message);
                 
         } catch (Exception $e) {
             DB::rollBack();
             
+            // Clean up new image if update failed
             if (isset($validated['cover_image'])) {
                 Storage::disk('public')->delete($validated['cover_image']);
             }

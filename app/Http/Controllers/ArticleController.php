@@ -39,14 +39,23 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Base validation rules
+        $rules = [
             'title' => 'required|string|max:255',
             'content' => 'required|string|min:100',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
-            'status' => 'required|in:draft,published'
-        ]);
+        ];
+
+        // Status validation depends on user role
+        if (Auth::user()->isAdmin()) {
+            $rules['status'] = 'required|in:draft,pending,published,rejected';
+        } else {
+            $rules['status'] = 'required|in:draft,pending';
+        }
+
+        $validated = $request->validate($rules);
 
         DB::beginTransaction();
         
@@ -68,9 +77,13 @@ class ArticleController extends Controller
             
             DB::commit();
 
+            $message = $validated['status'] === 'pending' 
+                ? 'Article submitted for approval!' 
+                : 'Article created successfully!';
+
             return redirect()
                 ->route('articles.show', $article)
-                ->with('success', 'Article created successfully!');
+                ->with('success', $message);
                 
         } catch (Exception $e) {
             DB::rollBack();
@@ -91,6 +104,13 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
+        // Allow viewing if: published, or owner, or admin
+        if ($article->status !== 'published' 
+            && Auth::id() !== $article->user_id 
+            && !Auth::user()?->isAdmin()) {
+            abort(403, 'This article is not available.');
+        }
+
         $article->load(['user', 'categories']);
         return view('articles.show', compact('article'));
     }
@@ -117,14 +137,23 @@ class ArticleController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $validated = $request->validate([
+        // Base validation rules
+        $rules = [
             'title' => 'required|string|max:255',
             'content' => 'required|string|min:100',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
-            'status' => 'required|in:draft,published'
-        ]);
+        ];
+
+        // Status validation depends on user role
+        if (Auth::user()->isAdmin()) {
+            $rules['status'] = 'required|in:draft,pending,published,rejected';
+        } else {
+            $rules['status'] = 'required|in:draft,pending';
+        }
+
+        $validated = $request->validate($rules);
 
         DB::beginTransaction();
         
@@ -146,9 +175,13 @@ class ArticleController extends Controller
             
             DB::commit();
 
+            $message = $validated['status'] === 'pending' 
+                ? 'Article submitted for approval!' 
+                : 'Article updated successfully!';
+
             return redirect()
                 ->route('articles.show', $article)
-                ->with('success', 'Article updated successfully!');
+                ->with('success', $message);
                 
         } catch (Exception $e) {
             DB::rollBack();

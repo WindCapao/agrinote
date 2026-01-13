@@ -4,6 +4,20 @@
 
 @section('content')
 <div style="max-width: 800px; margin: 0 auto;">
+    <!-- Back button at the top -->
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ route('articles.index') }}"
+           style="background: #f3f4f6; 
+                  color: #374151; 
+                  padding: 0.5rem 1rem; 
+                  border-radius: 0.375rem; 
+                  text-decoration: none; 
+                  font-weight: 600;
+                  display: inline-block;">
+            Back to Articles
+        </a>
+    </div>
+
     <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Create New Article</h1>
     
     <form method="POST" action="{{ route('articles.store') }}" enctype="multipart/form-data">
@@ -112,12 +126,23 @@
                            border: 1px solid #d1d5db; 
                            border-radius: 0.5rem;
                            font-size: 1rem;">
-                <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Draft</option>
-                <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
+                <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Save as Draft</option>
+                <option value="pending" {{ old('status') === 'pending' ? 'selected' : '' }}>Submit for Approval</option>
+                @if(Auth::user()->isAdmin())
+                    <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Publish Immediately (Admin)</option>
+                    <option value="rejected" {{ old('status') === 'rejected' ? 'selected' : '' }}>Reject (Admin)</option>
+                @endif
             </select>
             @error('status')
                 <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
             @enderror
+            <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem;">
+                @if(Auth::user()->isAdmin())
+                    As an admin, you can publish immediately or submit for review.
+                @else
+                    Submit for approval to have your content reviewed by an admin.
+                @endif
+            </p>
         </div>
         
         <!-- Submit Buttons -->

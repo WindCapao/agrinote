@@ -4,6 +4,20 @@
 
 @section('content')
 <div style="max-width: 1000px; margin: 0 auto;">
+    <!-- Back button at the top -->
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ route('books.index') }}"
+           style="background: #f3f4f6; 
+                  color: #374151; 
+                  padding: 0.5rem 1rem; 
+                  border-radius: 0.375rem; 
+                  text-decoration: none; 
+                  font-weight: 600;
+                  display: inline-block;">
+            Back to Books
+        </a>
+    </div>
+
     <div style="display: grid; grid-template-columns: 300px 1fr; gap: 3rem;">
         <!-- Book Cover -->
         <div>
@@ -13,7 +27,7 @@
                      style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
             @else
                 <div style="width: 100%; aspect-ratio: 2/3; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                    📚
+                    
                 </div>
             @endif
         </div>
@@ -62,12 +76,21 @@
             
             <!-- Status and Date -->
             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                @php
+                    $statusColors = [
+                        'published' => ['bg' => '#d1fae5', 'text' => '#065f46'],
+                        'draft' => ['bg' => '#e5e7eb', 'text' => '#374151'],
+                        'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                        'rejected' => ['bg' => '#fee2e2', 'text' => '#991b1b'],
+                    ];
+                    $color = $statusColors[$book->status] ?? $statusColors['draft'];
+                @endphp
                 <span style="padding: 0.5rem 1rem; 
                            border-radius: 9999px; 
                            font-weight: 500; 
                            font-size: 0.875rem;
-                           background: {{ $book->status === 'published' ? '#d1fae5' : '#fef3c7' }};
-                           color: {{ $book->status === 'published' ? '#065f46' : '#92400e' }};">
+                           background: {{ $color['bg'] }};
+                           color: {{ $color['text'] }};">
                     {{ ucfirst($book->status) }}
                 </span>
                 

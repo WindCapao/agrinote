@@ -1,9 +1,23 @@
 @extends('layouts.app')
 
-@section('title', $image->title . 'All Images - Contently')
+@section('title', $image->title . ' - Contently')
 
 @section('content')
 <div style="max-width: 1200px; margin: 0 auto;">
+    <!-- Back button at the top -->
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ route('images.index') }}"
+           style="background: #f3f4f6; 
+                  color: #374151; 
+                  padding: 0.5rem 1rem; 
+                  border-radius: 0.375rem; 
+                  text-decoration: none; 
+                  font-weight: 600;
+                  display: inline-block;">
+            Back to Images
+        </a>
+    </div>
+
     <!-- Image Title -->
     <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; text-align: center;">
         {{ $image->title }}
@@ -27,15 +41,24 @@
         
         @if($image->photographer)
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <span>{{ $image->photographer }}</span>
+                <span>{{ $image->photographer }}</span>
             </div>
         @endif
         
+        @php
+            $statusColors = [
+                'published' => ['bg' => '#d1fae5', 'text' => '#065f46'],
+                'draft' => ['bg' => '#e5e7eb', 'text' => '#374151'],
+                'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
+                'rejected' => ['bg' => '#fee2e2', 'text' => '#991b1b'],
+            ];
+            $color = $statusColors[$image->status] ?? $statusColors['draft'];
+        @endphp
         <span style="padding: 0.25rem 0.75rem; 
                    border-radius: 9999px; 
                    font-weight: 500;
-                   background: {{ $image->status === 'published' ? '#d1fae5' : '#fef3c7' }};
-                   color: {{ $image->status === 'published' ? '#065f46' : '#92400e' }};">
+                   background: {{ $color['bg'] }};
+                   color: {{ $color['text'] }};">
             {{ ucfirst($image->status) }}
         </span>
     </div>

@@ -4,6 +4,20 @@
 
 @section('content')
 <div style="max-width: 800px; margin: 0 auto;">
+    <!-- Back button at the top -->
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ route('articles.show', $article) }}"
+           style="background: #f3f4f6; 
+                  color: #374151; 
+                  padding: 0.5rem 1rem; 
+                  border-radius: 0.375rem; 
+                  text-decoration: none; 
+                  font-weight: 600;
+                  display: inline-block;">
+            Back to Articles
+        </a>
+    </div>
+
     <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Edit Article</h1>
     
     <form method="POST" action="{{ route('articles.update', $article) }}" enctype="multipart/form-data">

@@ -4,17 +4,18 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\ApprovalController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\HomeController;  // ADD THIS
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-// additional 
+// Redirect dashboard to home
 Route::get('/dashboard', function () {
-    return redirect()->route('home');  // Changed to redirect to home instead of books
+    return redirect()->route('home');
 })->middleware(['auth'])->name('dashboard');
 
 // PUBLIC ROUTES (anyone can access)
-Route::get('/', [HomeController::class, 'index'])->name('home');  // CHANGED: Now uses HomeController
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Articles
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
@@ -60,12 +61,48 @@ Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show')
 Route::get('/images/{image}', [ImageController::class, 'show'])->name('images.show');
 
 // ADMIN ONLY ROUTES
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/articles', [AdminController::class, 'articles'])->name('admin.articles');
-    Route::get('/books', [AdminController::class, 'books'])->name('admin.books');
-    Route::get('/images', [AdminController::class, 'images'])->name('admin.images');
-    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Content Management Dashboard - This is the main content management page
+    Route::get('/content', [AdminController::class, 'content'])->name('content.index');
+    
+    // User Management - COMPLETE CRUD
+    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    
+    // Individual content creation/editing routes (these stay separate)
+    Route::get('/articles/create', [AdminController::class, 'createArticle'])->name('articles.create');
+    Route::post('/articles', [AdminController::class, 'storeArticle'])->name('articles.store');
+    Route::get('/articles/{article}', [AdminController::class, 'showArticle'])->name('articles.show');
+    Route::get('/articles/{article}/edit', [AdminController::class, 'editArticle'])->name('articles.edit');
+    Route::put('/articles/{article}', [AdminController::class, 'updateArticle'])->name('articles.update');
+    Route::delete('/articles/{article}', [AdminController::class, 'destroyArticle'])->name('articles.destroy');
+    
+    Route::get('/books/create', [AdminController::class, 'createBook'])->name('books.create');
+    Route::post('/books', [AdminController::class, 'storeBook'])->name('books.store');
+    Route::get('/books/{book}', [AdminController::class, 'showBook'])->name('books.show');
+    Route::get('/books/{book}/edit', [AdminController::class, 'editBook'])->name('books.edit');
+    Route::put('/books/{book}', [AdminController::class, 'updateBook'])->name('books.update');
+    Route::delete('/books/{book}', [AdminController::class, 'destroyBook'])->name('books.destroy');
+    
+    Route::get('/images/create', [AdminController::class, 'createImage'])->name('images.create');
+    Route::post('/images', [AdminController::class, 'storeImage'])->name('images.store');
+    Route::get('/images/{image}', [AdminController::class, 'showImage'])->name('images.show');
+    Route::get('/images/{image}/edit', [AdminController::class, 'editImage'])->name('images.edit');
+    Route::put('/images/{image}', [AdminController::class, 'updateImage'])->name('images.update');
+    Route::delete('/images/{image}', [AdminController::class, 'destroyImage'])->name('images.destroy');
+    
+    // Approval System
+    Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+    Route::post('/approvals/{type}/{id}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
+    Route::post('/approvals/{type}/{id}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
 });
 
 // AUTH ROUTES (Laravel Breeze provides these)

@@ -37,63 +37,82 @@ class ImageController extends Controller
     /**
      * Store a newly uploaded image
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'license' => 'nullable|string|max:100',
-            'photographer' => 'nullable|string|max:255',
-            'categories' => 'required|array|min:1',
-            'categories.*' => 'exists:categories,id',
-            'status' => 'required|in:draft,published'
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string|max:1000',
+        'image_path' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+        'license' => 'nullable|string|max:100',
+        'photographer' => 'nullable|string|max:255',
+        'categories' => 'required|array|min:1',
+        'categories.*' => 'exists:categories,id',
+        'status' => 'required|in:draft,pending,published'
+    ]);
+
+    // Auto-set status for regular users
+    if (!Auth::user()->isAdmin() && $validated['status'] === 'published') {
+        $validated['status'] = 'pending';
+    }
+
+    DB::beginTransaction();
+    
+    try {
+        $file = $request->file('image_path');
+        $imagePath = $file->store('images', 'public');
+        
+        // Get image dimensions
+        $imageSize = @getimagesize($file->getRealPath());
+        $width = $imageSize[0] ?? null;
+        $height = $imageSize[1] ?? null;
+
+        $image = Image::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'image_path' => $imagePath,
+            'width' => $width,
+            'height' => $height,
+            'file_size' => $file->getSize(),
+            'license' => $validated['license'] ?? null,
+            'photographer' => $validated['photographer'] ?? null,
+            'user_id' => Auth::id(),
+            'status' => $validated['status']
         ]);
 
-        DB::beginTransaction();
+        $image->categories()->attach($validated['categories']);
         
-        try {
-            $file = $request->file('image_path');
-            $imagePath = $file->store('images', 'public');
-            
-            // Get image dimensions
-            $imageSize = @getimagesize($file->getRealPath());
-            $width = $imageSize[0] ?? null;
-            $height = $imageSize[1] ?? null;
+        DB::commit();
 
-            $image = Image::create([
-                'title' => $validated['title'],
-                'description' => $validated['description'] ?? null,
-                'image_path' => $imagePath,
-                'width' => $width,
-                'height' => $height,
-                'file_size' => $file->getSize(),
-                'license' => $validated['license'] ?? null,
-                'photographer' => $validated['photographer'] ?? null,
-                'user_id' => Auth::id(),
-                'status' => $validated['status']
-            ]);
-
-            $image->categories()->attach($validated['categories']);
-            
-            DB::commit();
-
-            return redirect()
-                ->route('images.show', $image)
-                ->with('success', 'Image uploaded successfully!');
-                
-        } catch (Exception $e) {
-            DB::rollBack();
-            
-            if (isset($imagePath) && $imagePath) {
-                Storage::disk('public')->delete($imagePath);
-            }
-            
-            return back()
-                ->withInput()
-                ->withErrors(['error' => 'Failed to upload image. Please try again.']);
+        // Create appropriate message
+        $message = 'Image uploaded successfully!';
+        if ($validated['status'] === 'pending') {
+            $message = 'Image submitted for approval! It will be visible after admin review.';
+        } elseif ($validated['status'] === 'draft') {
+            $message = 'Image saved as draft!';
         }
+
+        // Debug: Log the flash message
+        \Log::info('Setting flash message: ' . $message);
+        \Log::info('Redirecting to: ' . route('images.show', $image));
+
+        return redirect()
+            ->route('images.show', $image)
+            ->with('success', $message);
+            
+    } catch (Exception $e) {
+        DB::rollBack();
+        
+        if (isset($imagePath) && $imagePath) {
+            Storage::disk('public')->delete($imagePath);
+        }
+        
+        \Log::error('Image upload failed: ' . $e->getMessage());
+        
+        return back()
+            ->withInput()
+            ->with('error', 'Failed to upload image. Please try again.');
     }
+}
 
     /**
      * Display the specified image

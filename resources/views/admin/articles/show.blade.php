@@ -1,61 +1,53 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' - Contently')
+@section('title', $article->title . ' - Admin')
 
 @section('content')
 <div style="max-width: 1200px; margin: 0 auto;">
     <div style="margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: start;">
             <div>
-                <!-- Back to Articles button -->
-                <div style="margin-bottom: 1rem;">
-                    <a href="{{ route('articles.index') }}"
-                       style="background: #f3f4f6; 
-                              color: #374151; 
-                              padding: 0.5rem 1rem; 
-                              border-radius: 0.375rem; 
-                              text-decoration: none; 
-                              font-weight: 600;
-                              display: inline-block;">
-                        Back to Articles
-                    </a>
-                </div>
                 <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">{{ $article->title }}</h1>
                 <p style="color: #6b7280;">Article Details</p>
             </div>
             <div style="display: flex; gap: 0.5rem;">
-                @auth
-                    @if(auth()->user()->role === 'admin' || auth()->user()->id === $article->user_id)
-                        <a href="{{ route('articles.edit', $article) }}"
-                           style="background: #2563eb; 
-                                  color: white; 
-                                  padding: 0.5rem 1rem; 
-                                  border-radius: 0.375rem; 
-                                  text-decoration: none; 
-                                  font-weight: 600;">
-                            Edit
-                        </a>
-                        <form method="POST" action="{{ route('articles.destroy', $article) }}" 
-                              onsubmit="return confirm('Are you sure you want to delete this article?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    style="background: #dc2626; 
-                                           color: white; 
-                                           padding: 0.5rem 1rem; 
-                                           border-radius: 0.375rem; 
-                                           border: none; 
-                                           font-weight: 600; 
-                                           cursor: pointer;">
-                                Delete
-                            </button>
-                        </form>
-                    @endif
-                @endauth
+                <a href="{{ route('admin.articles.edit', $article) }}"
+                   style="background: #2563eb; 
+                          color: white; 
+                          padding: 0.5rem 1rem; 
+                          border-radius: 0.375rem; 
+                          text-decoration: none; 
+                          font-weight: 600;">
+                    Edit
+                </a>
+                <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" 
+                      onsubmit="return confirm('Are you sure you want to delete this article?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            style="background: #dc2626; 
+                                   color: white; 
+                                   padding: 0.5rem 1rem; 
+                                   border-radius: 0.375rem; 
+                                   border: none; 
+                                   font-weight: 600; 
+                                   cursor: pointer;">
+                        Delete
+                    </button>
+                </form>
+                <a href="{{ URL::previous() }}"
+                   style="background: #f3f4f6; 
+                          color: #374151; 
+                          padding: 0.5rem 1rem; 
+                          border-radius: 0.375rem; 
+                          text-decoration: none; 
+                          font-weight: 600;">
+                    Back
+                </a>
             </div>
         </div>
     </div>
-
+            
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
         <!-- Article Content -->
         <div style="background: white; border-radius: 0.75rem; padding: 2rem; border: 1px solid #e5e7eb;">
