@@ -3,278 +3,382 @@
 @section('title', 'Edit Book - Contently')
 
 @section('content')
-<div style="max-width: 800px; margin: 0 auto;">
-    <!-- Back button at the top -->
-    <div style="margin-bottom: 1rem;">
-        <a href="{{ route('edit.show', $article) }}"
-           style="background: #f3f4f6; 
-                  color: #374151; 
-                  padding: 0.5rem 1rem; 
-                  border-radius: 0.375rem; 
-                  text-decoration: none; 
-                  font-weight: 600;
-                  display: inline-block;">
-            Back to Books
-        </a>
-    </div>
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .form-title {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        color: var(--text-light);
+        font-size: 1.1rem;
+    }
+    
+    .form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 3rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+    
+    .form-input,
+    .form-textarea,
+    .form-select,
+    .form-file {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid var(--border);
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s;
+        background: var(--white);
+    }
+    
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+    
+    .form-textarea {
+        min-height: 200px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+    
+    .form-help {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 0.5rem;
+    }
+    
+    .form-error {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .current-image {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--secondary);
+        border: 1px solid var(--border);
+    }
+    
+    .current-image img {
+        max-width: 200px;
+        height: auto;
+        display: block;
+    }
+    
+    .current-image-label {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .checkbox-group {
+        border: 2px solid var(--border);
+        padding: 1.5rem;
+        max-height: 250px;
+        overflow-y: auto;
+        background: var(--secondary);
+    }
+    
+    .checkbox-item {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .checkbox-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+    
+    .checkbox-item label {
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .btn-submit {
+        padding: 1rem 2.5rem;
+        background: var(--primary);
+        color: var(--white);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-submit:hover {
+        background: var(--white);
+        color: var(--primary);
+    }
+    
+    .btn-cancel {
+        padding: 1rem 2.5rem;
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+</style>
 
-    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Edit Book</h1>
+<div class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Edit Book</h1>
+        <p class="form-subtitle">Update book details</p>
+    </div>
     
     <form method="POST" action="{{ route('books.update', $book) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
-        <!-- Title -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="title" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Book Title <span style="color: #dc2626;">*</span>
-            </label>
-            <input type="text" 
-                   name="title" 
-                   id="title" 
-                   value="{{ old('title', $book->title) }}" 
-                   required
-                   style="width: 100%; 
-                          padding: 0.75rem; 
-                          border: 1px solid #d1d5db; 
-                          border-radius: 0.5rem;
-                          font-size: 1rem;
-                          @error('title') border-color: #dc2626; @enderror">
-            @error('title')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- Author -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="author" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Author <span style="color: #dc2626;">*</span>
-            </label>
-            <input type="text" 
-                   name="author" 
-                   id="author" 
-                   value="{{ old('author', $book->author) }}" 
-                   required
-                   style="width: 100%; 
-                          padding: 0.75rem; 
-                          border: 1px solid #d1d5db; 
-                          border-radius: 0.5rem;
-                          font-size: 1rem;">
-            @error('author')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- ISBN and Publisher Row -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-            <div>
-                <label for="isbn" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                    ISBN
-                </label>
+        <div class="form-card">
+            <!-- Title -->
+            <div class="form-section">
+                <label class="form-label">Book Title</label>
                 <input type="text" 
-                       name="isbn" 
-                       id="isbn" 
-                       value="{{ old('isbn', $book->isbn) }}" 
-                       style="width: 100%; 
-                              padding: 0.75rem; 
-                              border: 1px solid #d1d5db; 
-                              border-radius: 0.5rem;
-                              font-size: 1rem;">
+                       name="title" 
+                       class="form-input"
+                       value="{{ old('title', $book->title) }}"
+                       placeholder="Enter the book title..."
+                       required>
+                @error('title')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
             </div>
             
-            <div>
-                <label for="publisher" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                    Publisher
-                </label>
+            <!-- Author -->
+            <div class="form-section">
+                <label class="form-label">Author</label>
                 <input type="text" 
-                       name="publisher" 
-                       id="publisher" 
-                       value="{{ old('publisher', $book->publisher) }}" 
-                       style="width: 100%; 
-                              padding: 0.75rem; 
-                              border: 1px solid #d1d5db; 
-                              border-radius: 0.5rem;
-                              font-size: 1rem;">
-            </div>
-        </div>
-        
-        <!-- Publication Year and Pages Row -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-            <div>
-                <label for="publication_year" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                    Publication Year
-                </label>
-                <input type="number" 
-                       name="publication_year" 
-                       id="publication_year" 
-                       value="{{ old('publication_year', $book->publication_year) }}" 
-                       min="1000" 
-                       max="{{ date('Y') + 1 }}"
-                       style="width: 100%; 
-                              padding: 0.75rem; 
-                              border: 1px solid #d1d5db; 
-                              border-radius: 0.5rem;
-                              font-size: 1rem;">
+                       name="author" 
+                       class="form-input"
+                       value="{{ old('author', $book->author) }}"
+                       placeholder="Enter author name..."
+                       required>
+                @error('author')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
             </div>
             
-            <div>
-                <label for="pages" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                    Number of Pages
-                </label>
-                <input type="number" 
-                       name="pages" 
-                       id="pages" 
-                       value="{{ old('pages', $book->pages) }}" 
-                       min="1"
-                       style="width: 100%; 
-                              padding: 0.75rem; 
-                              border: 1px solid #d1d5db; 
-                              border-radius: 0.5rem;
-                              font-size: 1rem;">
+            <!-- ISBN and Publisher -->
+            <div class="form-section form-grid">
+                <div>
+                    <label class="form-label">ISBN</label>
+                    <input type="text" 
+                           name="isbn" 
+                           class="form-input"
+                           value="{{ old('isbn', $book->isbn) }}"
+                           placeholder="978-0-123456-78-9">
+                    @error('isbn')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+                
+                <div>
+                    <label class="form-label">Publisher</label>
+                    <input type="text" 
+                           name="publisher" 
+                           class="form-input"
+                           value="{{ old('publisher', $book->publisher) }}"
+                           placeholder="Publisher name">
+                    @error('publisher')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
-        </div>
-        
-        <!-- Description -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="description" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Description <span style="color: #dc2626;">*</span>
-            </label>
-            <textarea name="description" 
-                      id="description" 
-                      rows="8" 
-                      required
-                      style="width: 100%; 
-                             padding: 0.75rem; 
-                             border: 1px solid #d1d5db; 
-                             border-radius: 0.5rem;
-                             font-size: 1rem;
-                             font-family: inherit;">{{ old('description', $book->description) }}</textarea>
-            @error('description')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- Current Cover Image -->
-        @if($book->cover_image)
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                    Current Cover Image
-                </label>
-                <img src="{{ asset('storage/' . $book->cover_image) }}" 
-                     alt="Current cover"
-                     style="max-width: 200px; height: auto; border-radius: 0.5rem; border: 1px solid #d1d5db;">
+            
+            <!-- Publication Year and Pages -->
+            <div class="form-section form-grid">
+                <div>
+                    <label class="form-label">Publication Year</label>
+                    <input type="number" 
+                           name="publication_year" 
+                           class="form-input"
+                           value="{{ old('publication_year', $book->publication_year) }}"
+                           min="1000" 
+                           max="{{ date('Y') + 1 }}">
+                    @error('publication_year')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
+                
+                <div>
+                    <label class="form-label">Number of Pages</label>
+                    <input type="number" 
+                           name="pages" 
+                           class="form-input"
+                           value="{{ old('pages', $book->pages) }}"
+                           min="1">
+                    @error('pages')
+                        <div class="form-error">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
-        @endif
-        
-        <!-- New Cover Image -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="cover_image" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Change Cover Image
-            </label>
-            <input type="file" 
-                   name="cover_image" 
-                   id="cover_image" 
-                   accept="image/*"
-                   style="width: 100%; 
-                          padding: 0.75rem; 
-                          border: 1px solid #d1d5db; 
-                          border-radius: 0.5rem;
-                          font-size: 1rem;">
-            @error('cover_image')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- Categories with checkboxes -->
-<div style="margin-bottom: 2rem;">
-    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Categories</label>
-    <div style="border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 1rem; max-height: 200px; overflow-y: auto; background: white;">
-        @php
-            $selectedCategories = old('categories', $book->categories->pluck('id')->toArray());
-        @endphp
-        
-        @foreach($categories as $category)
-            <div style="margin-bottom: 0.5rem;">
-                <label style="display: flex; align-items: center; cursor: pointer; padding: 0.25rem 0;">
-                    <input type="checkbox" 
-                           name="categories[]" 
-                           value="{{ $category->id }}" 
-                           {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}
-                           style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
-                    <span style="font-size: 0.95rem;">{{ $category->name }}</span>
-                </label>
+            
+            <!-- Description -->
+            <div class="form-section">
+                <label class="form-label">Description</label>
+                <textarea name="description" 
+                          class="form-textarea"
+                          placeholder="Write a description of the book..."
+                          required>{{ old('description', $book->description) }}</textarea>
+                <div class="form-help">Minimum 50 characters required</div>
+                @error('description')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
             </div>
-        @endforeach
-    </div>
-    @error('categories')
-        <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</div>
-    @enderror
-    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">
-        Select one or more categories from the list above
-    </p>
-</div>
-
-        <!-- Status -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="status" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Status <span style="color: #dc2626;">*</span>
-            </label>
-            <select name="status" 
-                    id="status" 
-                    required
-                    style="width: 100%; 
-                           padding: 0.75rem; 
-                           border: 1px solid #d1d5db; 
-                           border-radius: 0.5rem;
-                           font-size: 1rem;">
-                <option value="draft" {{ old('status', $article->status) === 'draft' ? 'selected' : '' }}>Save as Draft</option>
-                <option value="pending" {{ old('status', $article->status) === 'pending' ? 'selected' : '' }}>Submit for Approval</option>
-                @if(Auth::user()->isAdmin())
-                    <option value="published" {{ old('status', $article->status) === 'published' ? 'selected' : '' }}>Publish Immediately (Admin)</option>
-                    <option value="rejected" {{ old('status', $article->status) === 'rejected' ? 'selected' : '' }}>Reject (Admin)</option>
-                @endif
-            </select>
-            @error('status')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-            <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem;">
-                @if(Auth::user()->isAdmin())
-                    As an admin, you can change status to any option.
-                @else
-                    @if($article->status === 'rejected')
-                        <span style="color: #dc2626; font-weight: 600;">This article was rejected.</span> You can edit and resubmit for approval.
-                    @elseif($article->status === 'pending')
-                        <span style="color: #f59e0b; font-weight: 600;">This article is pending review.</span>
+            
+            <!-- Current Cover Image -->
+            @if($book->cover_image)
+                <div class="current-image">
+                    <div class="current-image-label">Current Cover Image</div>
+                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Current cover image">
+                </div>
+            @endif
+            
+            <!-- Cover Image -->
+            <div class="form-section">
+                <label class="form-label">{{ $book->cover_image ? 'Change Cover Image (Optional)' : 'Cover Image (Optional)' }}</label>
+                <input type="file" 
+                       name="cover_image"
+                       class="form-file"
+                       accept="image/jpeg,image/png,image/jpg">
+                <div class="form-help">
+                    @if($book->cover_image)
+                        Leave empty to keep current image. 
                     @endif
-                @endif
-            </p>
+                    JPEG, PNG, or JPG. Max 2MB.
+                </div>
+                @error('cover_image')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <!-- Categories -->
+            <div class="form-section">
+                <label class="form-label">Categories</label>
+                <div class="checkbox-group">
+                    @php
+                        $selectedCategories = old('categories', $book->categories->pluck('id')->toArray());
+                    @endphp
+                    @foreach($categories as $category)
+                        <div class="checkbox-item">
+                            <input type="checkbox" 
+                                   name="categories[]" 
+                                   value="{{ $category->id }}"
+                                   id="category-{{ $category->id }}"
+                                   {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}>
+                            <label for="category-{{ $category->id }}">{{ $category->name }}</label>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="form-help">Select one or more categories</div>
+                @error('categories')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <!-- Status -->
+            <div class="form-section">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select" required>
+                    <option value="draft" {{ old('status', $book->status) === 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="pending" {{ old('status', $book->status) === 'pending' ? 'selected' : '' }}>Submit for Approval</option>
+                    @if(auth()->user()->isAdmin())
+                        <option value="published" {{ old('status', $book->status) === 'published' ? 'selected' : '' }}>Published</option>
+                        <option value="rejected" {{ old('status', $book->status) === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    @endif
+                </select>
+                <div class="form-help">
+                    @if(auth()->user()->isAdmin())
+                        Admins can publish immediately
+                    @else
+                        Select "Submit for Approval" when ready for admin review
+                    @endif
+                </div>
+                @error('status')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
         
-        <!-- Submit Buttons -->
-        <div style="display: flex; gap: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
-            <button type="submit" 
-                    style="padding: 0.75rem 2rem; 
-                           background: #2563eb; 
-                           color: white; 
-                           border: none; 
-                           border-radius: 0.5rem; 
-                           cursor: pointer;
-                           font-weight: 600;
-                           font-size: 1rem;">
-                Update Book
-            </button>
-            <a href="{{ route('books.show', $book) }}" 
-               style="padding: 0.75rem 2rem; 
-                      background: #f3f4f6; 
-                      color: #374151; 
-                      border-radius: 0.5rem; 
-                      text-decoration: none;
-                      font-weight: 600;
-                      font-size: 1rem;
-                      display: inline-block;
-                      text-align: center;">
-                Cancel
-            </a>
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Update Book</button>
+            <a href="{{ route('books.show', $book) }}" class="btn-cancel">Cancel</a>
         </div>
     </form>
 </div>

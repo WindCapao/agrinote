@@ -3,129 +3,324 @@
 @section('title', 'Image Gallery - Contently')
 
 @section('content')
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Image Gallery</h1>
+<style>
+    .page-header {
+        background: var(--white);
+        padding: 5rem 2rem 3rem;
+        text-align: center;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .page-actions {
+        margin-top: 2rem;
+    }
+    
+    .content-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+    
+    .images-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
+    
+    .image-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        transition: all 0.3s;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+    }
+    
+    .image-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        border-color: var(--accent);
+    }
+    
+    .image-container {
+        width: 100%;
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .image-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .image-card:hover .image-preview {
+        transform: scale(1.05);
+    }
+    
+    .image-dimensions {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+        background: rgba(0,0,0,0.7);
+        color: var(--white);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .image-content {
+        padding: 2rem;
+    }
+    
+    .image-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .image-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    .image-excerpt {
+        font-size: 1rem;
+        color: var(--text);
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .image-photographer {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        font-style: italic;
+    }
+    
+    .image-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .image-uploader {
+        font-weight: 600;
+    }
+    
+    .image-date {
+        color: var(--text-light);
+    }
+    
+    .categories-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .category-tag {
+        padding: 0.25rem 0.75rem;
+        background: var(--secondary);
+        color: var(--primary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .status-published {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .status-draft {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.2;
+    }
+    
+    .empty-title {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .empty-text {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .pagination {
+        margin-top: 4rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .images-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="page-container">
+        <h1 class="page-title">Image Gallery</h1>
+        <p class="page-subtitle">Explore our collection of stunning visual creations</p>
         
         @auth
-            <a href="{{ route('images.create') }}" 
-               style="padding: 0.5rem 1rem; 
-                      background: #2563eb; 
-                      color: white; 
-                      border-radius: 0.375rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      display: inline-block;">
-                Upload New Image
-            </a>
+            <div class="page-actions">
+                <a href="{{ route('images.create') }}" class="btn">Upload New Image</a>
+            </div>
         @endauth
     </div>
+</div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-        @forelse($images as $image)
-            <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column; background: white; transition: transform 0.2s;">
-                <a href="{{ route('images.show', $image) }}" style="display: block; position: relative; overflow: hidden;">
-                    <img src="{{ asset('storage/' . $image->image_path) }}" 
-                         alt="{{ $image->title }}"
-                         style="width: 100%; height: 250px; object-fit: cover; transition: transform 0.3s;"
-                         onmouseover="this.style.transform='scale(1.05)'"
-                         onmouseout="this.style.transform='scale(1)'">
+<div class="content-section">
+    @if($images->count() > 0)
+        <div class="images-grid">
+            @foreach($images as $image)
+                <a href="{{ route('images.show', $image) }}" class="image-card">
+                    <div class="image-container">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" 
+                             alt="{{ $image->title }}" 
+                             class="image-preview">
+                        @if($image->width && $image->height)
+                            <div class="image-dimensions">{{ $image->width }} × {{ $image->height }}</div>
+                        @endif
+                    </div>
                     
-                    <!-- Image dimensions overlay -->
-                    @if($image->width && $image->height)
-                        <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
-                            {{ $image->width }} × {{ $image->height }}
+                    <div class="image-content">
+                        <div class="image-meta">
+                            <span>Image</span>
+                            @if($image->categories->count() > 0)
+                                <span>•</span>
+                                <span>{{ $image->categories->first()->name }}</span>
+                            @endif
                         </div>
-                    @endif
+                        
+                        <h2 class="image-title">{{ $image->title }}</h2>
+                        
+                        @if($image->photographer)
+                            <div class="image-photographer">by {{ $image->photographer }}</div>
+                        @endif
+                        
+                        @if($image->description)
+                            <p class="image-excerpt">
+                                {{ Str::limit($image->description, 120) }}
+                            </p>
+                        @endif
+                        
+                        @if($image->categories->count() > 1)
+                            <div class="categories-tags">
+                                @foreach($image->categories->skip(1) as $category)
+                                    <span class="category-tag">{{ $category->name }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        
+                        <div class="image-footer">
+                            <span class="image-uploader">{{ $image->user->name ?? 'Anonymous' }}</span>
+                            <span class="image-date">{{ $image->created_at->format('M d, Y') }}</span>
+                        </div>
+                    </div>
                 </a>
-                
-                <div style="padding: 1rem; flex-grow: 1; display: flex; flex-direction: column;">
-                    <h3 style="font-size: 1.125rem; font-weight: bold; margin-bottom: 0.5rem;">
-                        <a href="{{ route('images.show', $image) }}" style="color: #2563eb; text-decoration: none;">
-                            {{ $image->title }}
-                        </a>
-                    </h3>
-                    
-                    @if($image->description)
-                        <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.75rem; flex-grow: 1;">
-                            {{ Str::limit($image->description, 80) }}
-                        </p>
-                    @endif
-                    
-                    <!-- Photographer -->
-                    @if($image->photographer)
-                        <p style="color: #9ca3af; font-size: 0.75rem; margin-bottom: 0.5rem;">
-                            {{ $image->photographer }}
-                        </p>
-                    @endif
-                    
-                    <!-- Categories -->
-                    <div style="margin-bottom: 0.75rem;">
-                        @foreach($image->categories as $category)
-                            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; margin-right: 0.25rem;">
-                                {{ $category->name }}
-                            </span>
-                        @endforeach
-                    </div>
-                    
-                    <!-- Status -->
-                    @php
-                        $statusColors = [
-                            'published' => ['bg' => '#d1fae5', 'text' => '#065f46'],
-                            'draft' => ['bg' => '#e5e7eb', 'text' => '#374151'],
-                            'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
-                            'rejected' => ['bg' => '#fee2e2', 'text' => '#991b1b'],
-                        ];
-                        $color = $statusColors[$image->status] ?? $statusColors['draft'];
-                    @endphp
-                    <div style="margin-bottom: 0.75rem;">
-                        <span style="text-transform: capitalize; 
-                                     padding: 0.25rem 0.5rem; 
-                                     border-radius: 0.25rem; 
-                                     font-size: 0.75rem;
-                                     background: {{ $color['bg'] }};
-                                     color: {{ $color['text'] }};">
-                            {{ $image->status }}
-                        </span>
-                    </div>
-                    
-                    <!-- Footer info -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #e5e7eb; font-size: 0.75rem;">
-                        <span style="color: #9ca3af;">
-                            {{ $image->created_at->format('M d, Y') }}
-                        </span>
-                        <span style="color: #9ca3af;">
-                            {{ $image->getFileSizeFormatted() }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: #f9fafb; border-radius: 0.5rem;">
-                <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">No images found.</p>
-                @auth
-                    <a href="{{ route('images.create') }}" 
-                       style="padding: 0.5rem 1rem; 
-                              background: #2563eb; 
-                              color: white; 
-                              border-radius: 0.375rem; 
-                              text-decoration: none; 
-                              font-weight: 600;
-                              display: inline-block;">
-                        Upload the First Image
-                    </a>
-                @else
-                    <p style="color: #9ca3af;">
-                        <a href="{{ route('login') }}" style="color: #2563eb;">Login</a> to upload an image
-                    </p>
-                @endauth
-            </div>
-        @endforelse
-    </div>
-
-    <!-- Pagination -->
-    <div style="margin-top: 2rem;">
-        {{ $images->links() }}
-    </div>
+            @endforeach
+        </div>
+        
+        <div class="pagination">
+            {{ $images->links() }}
+        </div>
+    @else
+        <div class="empty-state">
+    
+            <h2 class="empty-title">No Images Yet</h2>
+            <p class="empty-text">Be the first to share your visual creations with the community.</p>
+            @auth
+                <a href="{{ route('images.create') }}" class="btn">Upload the First Image</a>
+            @else
+                <a href="{{ route('login') }}" class="btn">Login to Upload Images</a>
+            @endauth
+        </div>
+    @endif
 </div>
 @endsection

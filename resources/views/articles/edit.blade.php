@@ -3,171 +3,307 @@
 @section('title', 'Edit Article - Contently')
 
 @section('content')
-<div style="max-width: 800px; margin: 0 auto;">
-    <!-- Back button at the top -->
-    <div style="margin-bottom: 1rem;">
-        <a href="{{ route('articles.show', $article) }}"
-           style="background: #f3f4f6; 
-                  color: #374151; 
-                  padding: 0.5rem 1rem; 
-                  border-radius: 0.375rem; 
-                  text-decoration: none; 
-                  font-weight: 600;
-                  display: inline-block;">
-            Back to Articles
-        </a>
-    </div>
+<style>
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .form-title {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        color: var(--text-light);
+        font-size: 1.1rem;
+    }
+    
+    .form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 3rem;
+        margin-bottom: 2rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+    
+    .form-input,
+    .form-textarea,
+    .form-select,
+    .form-file {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid var(--border);
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s;
+        background: var(--white);
+    }
+    
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+    
+    .form-textarea {
+        min-height: 300px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+    
+    .form-help {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 0.5rem;
+    }
+    
+    .form-error {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .current-image {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--secondary);
+        border: 1px solid var(--border);
+    }
+    
+    .current-image img {
+        max-width: 300px;
+        height: auto;
+        display: block;
+    }
+    
+    .current-image-label {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .checkbox-group {
+        border: 2px solid var(--border);
+        padding: 1.5rem;
+        max-height: 250px;
+        overflow-y: auto;
+        background: var(--secondary);
+    }
+    
+    .checkbox-item {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .checkbox-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+    
+    .checkbox-item label {
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .btn-submit {
+        padding: 1rem 2.5rem;
+        background: var(--primary);
+        color: var(--white);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-submit:hover {
+        background: var(--white);
+        color: var(--primary);
+    }
+    
+    .btn-cancel {
+        padding: 1rem 2.5rem;
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+</style>
 
-    <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">Edit Article</h1>
+<div class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Edit Article</h1>
+        <p class="form-subtitle">Update your article details</p>
+    </div>
     
     <form method="POST" action="{{ route('articles.update', $article) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
-        <!-- Title -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="title" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Title <span style="color: #dc2626;">*</span>
-            </label>
-            <input type="text" 
-                   name="title" 
-                   id="title" 
-                   value="{{ old('title', $article->title) }}" 
-                   required
-                   style="width: 100%; 
-                          padding: 0.75rem; 
-                          border: 1px solid #d1d5db; 
-                          border-radius: 0.5rem;
-                          font-size: 1rem;
-                          @error('title') border-color: #dc2626; @enderror">
-            @error('title')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- Content -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="content" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Content <span style="color: #dc2626;">*</span>
-            </label>
-            <textarea name="content" 
-                      id="content" 
-                      rows="15" 
-                      required
-                      style="width: 100%; 
-                             padding: 0.75rem; 
-                             border: 1px solid #d1d5db; 
-                             border-radius: 0.5rem;
-                             font-size: 1rem;
-                             font-family: inherit;
-                             @error('content') border-color: #dc2626; @enderror">{{ old('content', $article->content) }}</textarea>
-            @error('content')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- Current Featured Image -->
-        @if($article->featured_image)
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                    Current Featured Image
-                </label>
-                <img src="{{ asset('storage/' . $article->featured_image) }}" 
-                     alt="Current featured image"
-                     style="max-width: 300px; height: auto; border-radius: 0.5rem; border: 1px solid #d1d5db;">
+        <div class="form-card">
+            <!-- Title -->
+            <div class="form-section">
+                <label class="form-label">Article Title</label>
+                <input type="text" 
+                       name="title" 
+                       class="form-input"
+                       value="{{ old('title', $article->title) }}"
+                       placeholder="Enter a compelling title..."
+                       required>
+                @error('title')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
             </div>
-        @endif
-        
-        <!-- New Featured Image -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="featured_image" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Change Featured Image
-            </label>
-            <input type="file" 
-                   name="featured_image" 
-                   id="featured_image" 
-                   accept="image/*"
-                   style="width: 100%; 
-                          padding: 0.75rem; 
-                          border: 1px solid #d1d5db; 
-                          border-radius: 0.5rem;
-                          font-size: 1rem;
-                          @error('featured_image') border-color: #dc2626; @enderror">
-            @error('featured_image')
-                <span style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
-            @enderror
-        </div>
-        
-        <!-- Categories with checkboxes -->
-<div style="margin-bottom: 2rem;">
-    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Categories</label>
-    <div style="border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 1rem; max-height: 200px; overflow-y: auto; background: white;">
-        @php
-            $selectedCategories = old('categories', $article->categories->pluck('id')->toArray());
-        @endphp
-        
-        @foreach($categories as $category)
-            <div style="margin-bottom: 0.5rem;">
-                <label style="display: flex; align-items: center; cursor: pointer; padding: 0.25rem 0;">
-                    <input type="checkbox" 
-                           name="categories[]" 
-                           value="{{ $category->id }}" 
-                           {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}
-                           style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
-                    <span style="font-size: 0.95rem;">{{ $category->name }}</span>
-                </label>
+            
+            <!-- Content -->
+            <div class="form-section">
+                <label class="form-label">Content</label>
+                <textarea name="content" 
+                          class="form-textarea"
+                          placeholder="Write your article here..."
+                          required>{{ old('content', $article->content) }}</textarea>
+                <div class="form-help">Minimum 100 characters required</div>
+                @error('content')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
             </div>
-        @endforeach
-    </div>
-    @error('categories')
-        <div style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</div>
-    @enderror
-    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">
-        Select one or more categories from the list above
-    </p>
-</div>
-        
-        <!-- Status -->
-        <div style="margin-bottom: 1.5rem;">
-            <label for="status" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                Status <span style="color: #dc2626;">*</span>
-            </label>
-            <select name="status" 
-                    id="status" 
-                    required
-                    style="width: 100%; 
-                           padding: 0.75rem; 
-                           border: 1px solid #d1d5db; 
-                           border-radius: 0.5rem;
-                           font-size: 1rem;">
-                <option value="draft" {{ old('status', $article->status) === 'draft' ? 'selected' : '' }}>Draft</option>
-                <option value="published" {{ old('status', $article->status) === 'published' ? 'selected' : '' }}>Published</option>
-            </select>
+            
+            <!-- Current Featured Image -->
+            @if($article->featured_image)
+                <div class="current-image">
+                    <div class="current-image-label">Current Featured Image</div>
+                    <img src="{{ asset('storage/' . $article->featured_image) }}" alt="Current featured image">
+                </div>
+            @endif
+            
+            <!-- Featured Image -->
+            <div class="form-section">
+                <label class="form-label">{{ $article->featured_image ? 'Change Featured Image (Optional)' : 'Featured Image (Optional)' }}</label>
+                <input type="file" 
+                       name="featured_image"
+                       class="form-file"
+                       accept="image/jpeg,image/png,image/jpg">
+                <div class="form-help">
+                    @if($article->featured_image)
+                        Leave empty to keep current image. 
+                    @endif
+                    JPEG, PNG, or JPG. Max 2MB.
+                </div>
+                @error('featured_image')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <!-- Categories -->
+            <div class="form-section">
+                <label class="form-label">Categories</label>
+                <div class="checkbox-group">
+                    @php
+                        $selectedCategories = old('categories', $article->categories->pluck('id')->toArray());
+                    @endphp
+                    @foreach($categories as $category)
+                        <div class="checkbox-item">
+                            <input type="checkbox" 
+                                   name="categories[]" 
+                                   value="{{ $category->id }}"
+                                   id="category-{{ $category->id }}"
+                                   {{ in_array($category->id, $selectedCategories) ? 'checked' : '' }}>
+                            <label for="category-{{ $category->id }}">{{ $category->name }}</label>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="form-help">Select at least one category</div>
+                @error('categories')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <!-- Status -->
+            <div class="form-section">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select" required>
+                    <option value="draft" {{ old('status', $article->status) === 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="pending" {{ old('status', $article->status) === 'pending' ? 'selected' : '' }}>Submit for Review</option>
+                    @if(auth()->user()->isAdmin())
+                        <option value="published" {{ old('status', $article->status) === 'published' ? 'selected' : '' }}>Published</option>
+                        <option value="rejected" {{ old('status', $article->status) === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    @endif
+                </select>
+                <div class="form-help">
+                    @if(auth()->user()->isAdmin())
+                        Admins can publish immediately
+                    @else
+                        Select "Submit for Review" when ready for admin approval
+                    @endif
+                </div>
+                @error('status')
+                    <div class="form-error">{{ $message }}</div>
+                @enderror
+            </div>
         </div>
         
-        <!-- Submit Buttons -->
-        <div style="display: flex; gap: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
-            <button type="submit" 
-                    style="padding: 0.75rem 2rem; 
-                           background: #2563eb; 
-                           color: white; 
-                           border: none; 
-                           border-radius: 0.5rem; 
-                           cursor: pointer;
-                           font-weight: 600;
-                           font-size: 1rem;">
-                Update Article
-            </button>
-            <a href="{{ route('articles.show', $article) }}" 
-               style="padding: 0.75rem 2rem; 
-                      background: #f3f4f6; 
-                      color: #374151; 
-                      border-radius: 0.5rem; 
-                      text-decoration: none;
-                      font-weight: 600;
-                      font-size: 1rem;">
-                Cancel
-            </a>
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Update Article</button>
+            <a href="{{ route('articles.show', $article) }}" class="btn-cancel">Cancel</a>
         </div>
     </form>
 </div>

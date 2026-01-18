@@ -3,118 +3,330 @@
 @section('title', 'Book Collection - Contently')
 
 @section('content')
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Book Collection</h1>
+<style>
+    .page-header {
+        background: var(--white);
+        padding: 5rem 2rem 3rem;
+        text-align: center;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .page-actions {
+        margin-top: 2rem;
+    }
+    
+    .content-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+    
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
+    
+    .book-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        transition: all 0.3s;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        border-color: var(--accent);
+    }
+    
+    .book-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .book-content {
+        padding: 2rem;
+    }
+    
+    .book-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .book-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    .book-author {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        font-style: italic;
+    }
+    
+    .book-excerpt {
+        font-size: 1rem;
+        color: var(--text);
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .book-details {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .book-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .book-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .book-uploader {
+        font-weight: 600;
+    }
+    
+    .book-date {
+        color: var(--text-light);
+    }
+    
+    .categories-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .category-tag {
+        padding: 0.25rem 0.75rem;
+        background: var(--secondary);
+        color: var(--primary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border-radius: 4px;
+    }
+    
+    .status-published {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .status-draft {
+        background: #e5e7eb;
+        color: #374151;
+    }
+    
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.2;
+    }
+    
+    .empty-title {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .empty-text {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .pagination {
+        margin-top: 4rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .books-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="page-container">
+        <h1 class="page-title">Book Collection</h1>
+        <p class="page-subtitle">Discover and share literary gems from our community</p>
         
         @auth
-            <a href="{{ route('books.create') }}" 
-               style="padding: 0.5rem 1rem; 
-                      background: #2563eb; 
-                      color: white; 
-                      border-radius: 0.375rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      display: inline-block;">
-                Add New Book
-            </a>
+            <div class="page-actions">
+                <a href="{{ route('books.create') }}" class="btn">Add New Book</a>
+            </div>
         @endauth
     </div>
+</div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
-        @forelse($books as $book)
-            <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column;">
-                @if($book->cover_image)
-                    <img src="{{ asset('storage/' . $book->cover_image) }}" 
-                         alt="{{ $book->title }}"
-                         style="width: 100%; height: 300px; object-fit: cover;">
-                @else
-                    <div style="width: 100%; height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                        📚
-                    </div>
-                @endif
-                
-                <div style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
-                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem;">
-                        <a href="{{ route('books.show', $book) }}" style="color: #2563eb; text-decoration: none;">
-                            {{ $book->title }}
-                        </a>
-                    </h3>
-                    
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">
-                        by {{ $book->author }}
-                    </p>
-                    
-                    @if($book->publisher || $book->publication_year)
-                        <p style="color: #9ca3af; font-size: 0.75rem; margin-bottom: 1rem;">
-                            @if($book->publisher){{ $book->publisher }}@endif
-                            @if($book->publisher && $book->publication_year), @endif
-                            @if($book->publication_year){{ $book->publication_year }}@endif
-                        </p>
+<div class="content-section">
+    @if($books->count() > 0)
+        <div class="books-grid">
+            @foreach($books as $book)
+                <a href="{{ route('books.show', $book) }}" class="book-card">
+                    @if($book->cover_image)
+                        <img src="{{ asset('storage/' . $book->cover_image) }}" 
+                             alt="{{ $book->title }}" 
+                             class="book-image">
+                    @else
+                        <div class="book-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                            📚
+                        </div>
                     @endif
                     
-                    <div style="margin-bottom: 1rem;">
-                        @foreach($book->categories as $category)
-                            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; margin-right: 0.25rem;">
-                                {{ $category->name }}
-                            </span>
-                        @endforeach
+                    <div class="book-content">
+                        <div class="book-meta">
+                            <span>Book</span>
+                            @if($book->categories->count() > 0)
+                                <span>•</span>
+                                <span>{{ $book->categories->first()->name }}</span>
+                            @endif
+                        </div>
+                        
+                        <h2 class="book-title">{{ $book->title }}</h2>
+                        <div class="book-author">by {{ $book->author }}</div>
+                        
+                        <div class="book-details">
+                            @if($book->publisher)
+                                <div class="book-detail">
+                                    <span>📖</span>
+                                    <span>{{ $book->publisher }}</span>
+                                </div>
+                            @endif
+                            @if($book->publication_year)
+                                <div class="book-detail">
+                                    <span>📅</span>
+                                    <span>{{ $book->publication_year }}</span>
+                                </div>
+                            @endif
+                            @if($book->pages)
+                                <div class="book-detail">
+                                    <span>📄</span>
+                                    <span>{{ $book->pages }} pages</span>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <p class="book-excerpt">
+                            {{ Str::limit($book->description, 150) }}
+                        </p>
+                        
+                        @if($book->categories->count() > 1)
+                            <div class="categories-tags">
+                                @foreach($book->categories->skip(1) as $category)
+                                    <span class="category-tag">{{ $category->name }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        
+                        <div class="book-footer">
+                            <span class="book-uploader">{{ $book->user->name ?? 'Anonymous' }}</span>
+                            <span class="book-date">{{ $book->created_at->format('M d, Y') }}</span>
+                        </div>
                     </div>
-                    
-                    <p style="color: #4b5563; font-size: 0.875rem; margin-bottom: 1rem; flex-grow: 1;">
-                        {{ Str::limit($book->description, 100) }}
-                    </p>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
-                        <span style="font-size: 0.75rem; color: #9ca3af;">
-                            {{ $book->created_at->format('M d, Y') }}
-                        </span>
-                        @php
-                            $statusColors = [
-                                'published' => ['bg' => '#d1fae5', 'text' => '#065f46'],
-                                'draft' => ['bg' => '#e5e7eb', 'text' => '#374151'],
-                                'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
-                                'rejected' => ['bg' => '#fee2e2', 'text' => '#991b1b'],
-                            ];
-                            $color = $statusColors[$book->status] ?? $statusColors['draft'];
-                        @endphp
-                        <span style="text-transform: capitalize; 
-                                     padding: 0.25rem 0.5rem; 
-                                     border-radius: 0.25rem; 
-                                     font-size: 0.75rem;
-                                     background: {{ $color['bg'] }};
-                                     color: {{ $color['text'] }};">
-                            {{ $book->status }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: #f9fafb; border-radius: 0.5rem;">
-                <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">No books found.</p>
-                @auth
-                    <a href="{{ route('books.create') }}" 
-                       style="padding: 0.5rem 1rem; 
-                              background: #2563eb; 
-                              color: white; 
-                              border-radius: 0.375rem; 
-                              text-decoration: none; 
-                              font-weight: 600;
-                              display: inline-block;">
-                        Add the First Book
-                    </a>
-                @else
-                    <p style="color: #9ca3af;">
-                        <a href="{{ route('login') }}" style="color: #2563eb;">Login</a> to add a book
-                    </p>
-                @endauth
-            </div>
-        @endforelse
-    </div>
-
-    <!-- Pagination -->
-    <div style="margin-top: 2rem;">
-        {{ $books->links() }}
-    </div>
+                </a>
+            @endforeach
+        </div>
+        
+        <div class="pagination">
+            {{ $books->links() }}
+        </div>
+    @else
+        <div class="empty-state">
+            <h2 class="empty-title">No Books Yet</h2>
+            <p class="empty-text">Be the first to share your literary discoveries with the community.</p>
+            @auth
+                <a href="{{ route('books.create') }}" class="btn">Add the First Book</a>
+            @else
+                <a href="{{ route('login') }}" class="btn">Login to Add Books</a>
+            @endauth
+        </div>
+    @endif
 </div>
 @endsection

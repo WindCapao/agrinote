@@ -1,95 +1,259 @@
 @extends('layouts.app')
 
-@section('title', 'Latest Articles - Contently')
+@section('title', 'Articles - Contently')
 
 @section('content')
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Latest Articles</h1>
+<style>
+    .page-header {
+        background: var(--white);
+        padding: 5rem 2rem 3rem;
+        text-align: center;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .page-actions {
+        margin-top: 2rem;
+    }
+    
+    .content-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+    }
+    
+    .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
+    
+    .article-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        transition: all 0.3s;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+    }
+    
+    .article-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        border-color: var(--accent);
+    }
+    
+    .article-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .article-content {
+        padding: 2rem;
+    }
+    
+    .article-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .article-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    .article-excerpt {
+        font-size: 1rem;
+        color: var(--text);
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .article-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .article-author {
+        font-weight: 600;
+    }
+    
+    .article-date {
+        color: var(--text-light);
+    }
+    
+    .categories-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .category-tag {
+        padding: 0.25rem 0.75rem;
+        background: var(--secondary);
+        color: var(--primary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.2;
+    }
+    
+    .empty-title {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .empty-text {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .pagination {
+        margin-top: 4rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .articles-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="page-container">
+        <h1 class="page-title">Articles</h1>
+        <p class="page-subtitle">Explore our collection of thoughtfully written perspectives and insights</p>
         
         @auth
-            <a href="{{ route('articles.create') }}" 
-               style="padding: 0.5rem 1rem; 
-                      background: #2563eb; 
-                      color: white; 
-                      border-radius: 0.375rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      display: inline-block;">
-                Write New Article
-            </a>
+            <div class="page-actions">
+                <a href="{{ route('articles.create') }}" class="btn">Write an Article</a>
+            </div>
         @endauth
     </div>
+</div>
 
-    <div style="display: grid; gap: 2rem;">
-        @forelse($articles as $article)
-            <article style="border: 1px solid #e5e7eb; padding: 1.5rem; border-radius: 0.5rem;">
-                @if($article->featured_image)
-                    <img src="{{ asset('storage/' . $article->featured_image) }}" 
-                         alt="{{ $article->title }}"
-                         style="width: 100%; height: 200px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1rem;">
-                @endif
-                
-                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">
-                    <a href="{{ route('articles.show', $article) }}" style="color: #2563eb; text-decoration: none;">
-                        {{ $article->title }}
-                    </a>
-                </h2>
-                
-                <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">
-                    <span>By {{ $article->user->name }}</span> • 
-                    <span>{{ $article->created_at->format('M d, Y') }}</span> • 
-                    <span style="text-transform: capitalize; 
-                                 padding: 0.25rem 0.5rem; 
-                                 border-radius: 0.25rem;
-                                 background: {{ $article->status === 'published' ? '#d1fae5' : '#fef3c7' }};
-                                 color: {{ $article->status === 'published' ? '#065f46' : '#92400e' }};">
-                        {{ $article->status }}
-                    </span>
-                </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    @foreach($article->categories as $category)
-                        <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; margin-right: 0.5rem;">
-                            {{ $category->name }}
-                        </span>
-                    @endforeach
-                </div>
-                
-                <p style="color: #4b5563; margin-bottom: 1rem;">
-                    {{ Str::limit($article->content, 200) }}
-                </p>
-                
-                <a href="{{ route('articles.show', $article) }}" style="color: #2563eb; text-decoration: none; font-weight: 500;">
-                    Read More
+<div class="content-section">
+    @if($articles->count() > 0)
+        <div class="articles-grid">
+            @foreach($articles as $article)
+                <a href="{{ route('articles.show', $article) }}" class="article-card">
+                    @if($article->featured_image)
+                        <img src="{{ asset('storage/' . $article->featured_image) }}" 
+                             alt="{{ $article->title }}" 
+                             class="article-image">
+                    @else
+                        <div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                            📝
+                        </div>
+                    @endif
+                    
+                    <div class="article-content">
+                        <div class="article-meta">
+                            <span>Article</span>
+                            @if($article->categories->count() > 0)
+                                <span>•</span>
+                                <span>{{ $article->categories->first()->name }}</span>
+                            @endif
+                        </div>
+                        
+                        <h2 class="article-title">{{ $article->title }}</h2>
+                        
+                        <p class="article-excerpt">
+                            {{ Str::limit(strip_tags($article->content), 150) }}
+                        </p>
+                        
+                        @if($article->categories->count() > 1)
+                            <div class="categories-tags">
+                                @foreach($article->categories->skip(1) as $category)
+                                    <span class="category-tag">{{ $category->name }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        
+                        <div class="article-footer">
+                            <span class="article-author">{{ $article->user->name ?? 'Anonymous' }}</span>
+                            <span class="article-date">{{ $article->created_at->format('M d, Y') }}</span>
+                        </div>
+                    </div>
                 </a>
-            </article>
-        @empty
-            <div style="text-align: center; padding: 3rem; background: #f9fafb; border-radius: 0.5rem;">
-                <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">No articles found.</p>
-                @auth
-                    <a href="{{ route('articles.create') }}" 
-                       style="padding: 0.5rem 1rem; 
-                              background: #2563eb; 
-                              color: white; 
-                              border-radius: 0.375rem; 
-                              text-decoration: none; 
-                              font-weight: 600;
-                              display: inline-block;">
-                        Write the First Article
-                    </a>
-                @else
-                    <p style="color: #9ca3af;">
-                        <a href="{{ route('login') }}" style="color: #2563eb;">Login</a> to write an article
-                    </p>
-                @endauth
-            </div>
-        @endforelse
-    </div>
-
-    <!-- Pagination -->
-    <div style="margin-top: 2rem;">
-        {{ $articles->links() }}
-    </div>
+            @endforeach
+        </div>
+        
+        <div class="pagination">
+            {{ $articles->links() }}
+        </div>
+    @else
+        <div class="empty-state">
+            <h2 class="empty-title">No Articles Yet</h2>
+            <p class="empty-text">Be the first to share your thoughts and insights with the community.</p>
+            @auth
+                <a href="{{ route('articles.create') }}" class="btn">Write the First Article</a>
+            @else
+                <a href="{{ route('login') }}" class="btn">Login to Write</a>
+            @endauth
+        </div>
+    @endif
 </div>
 @endsection

@@ -4,258 +4,341 @@
 
 @section('content')
 <style>
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .hero {
+        background: var(--white);
+        padding: 6rem 2rem 4rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
     }
     
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+    .hero-container {
+        max-width: 900px;
+        margin: 0 auto;
     }
     
-    .exhibit-item {
-        animation: fadeInUp 0.8s ease-out;
-        animation-fill-mode: both;
+    .hero h1 {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        letter-spacing: -0.02em;
     }
     
-    .exhibit-item:nth-child(1) { animation-delay: 0.1s; }
-    .exhibit-item:nth-child(2) { animation-delay: 0.2s; }
-    .exhibit-item:nth-child(3) { animation-delay: 0.3s; }
-    .exhibit-item:nth-child(4) { animation-delay: 0.4s; }
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2.5rem;
+        line-height: 1.8;
+    }
     
-    .accent-line {
-        position: relative;
+    .section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 5rem 2rem;
+    }
+    
+    .section-header {
+        margin-bottom: 3rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+    }
+    
+    .section-subtitle {
+        color: var(--text-light);
+        font-size: 1.1rem;
+    }
+    
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .gallery-item {
+        background: var(--white);
+        border: 1px solid var(--border);
+        transition: all 0.3s;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        border-color: var(--accent);
+    }
+    
+    .gallery-image {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .gallery-content {
+        padding: 1.5rem;
+    }
+    
+    .gallery-type {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .gallery-title {
+        font-size: 1.35rem;
+        margin-bottom: 0.75rem;
+        color: var(--primary);
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+    }
+    
+    .gallery-meta {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 0.75rem;
+    }
+    
+    .gallery-excerpt {
+        font-size: 0.95rem;
+        color: var(--text);
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
     }
     
-    .accent-line::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #d97706, #ea580c);
-        transition: width 0.4s ease;
+    .cta-section {
+        background: var(--primary);
+        color: var(--white);
+        padding: 5rem 2rem;
+        text-align: center;
+        margin-top: 4rem;
     }
     
-    .accent-line:hover::after {
-        width: 100%;
+    .cta-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .cta-title {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--white);
+    }
+    
+    .cta-text {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: rgba(255,255,255,0.9);
+    }
+    
+    .btn-cta {
+        padding: 1rem 2.5rem;
+        background: var(--accent);
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        border: 2px solid var(--accent);
+        display: inline-block;
+    }
+    
+    .btn-cta:hover {
+        background: transparent;
+        color: var(--accent);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-light);
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+    
+    @media (max-width: 1024px) {
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .gallery-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+        }
     }
 </style>
 
-<!-- Featured Highlight Bar -->
-<section style="max-width: 1400px; margin: 3rem auto 4rem; padding: 0 2rem;">
-    <div style="background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%); padding: 2rem 3rem; border-left: 6px solid #fbbf24; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; right: 0; width: 200px; height: 200px; background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%); animation: float 6s ease-in-out infinite;"></div>
-        <div style="position: relative; z-index: 1;">
-            <p style="font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: #fbbf24; margin-bottom: 0.5rem; font-weight: 700;">⭐ Current Spotlight</p>
-            <h2 style="font-size: 1.75rem; font-weight: 800; color: white; letter-spacing: -0.01em; line-height: 1.3;">Discover today's featured selections from our community of creators</h2>
-        </div>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <h1>Contently</h1>
+        <p class="hero-subtitle">
+            A platform where content meets curation.
+        </p>
     </div>
 </section>
 
-<!-- Mixed Gallery Section - Newspaper/Magazine Layout -->
-<section style="max-width: 1400px; margin: 0 auto 6rem; padding: 0 2rem;">
-    <div style="margin-bottom: 4rem;">
-        <div style="border-left: 6px solid #d97706; padding-left: 1.5rem; margin-bottom: 1rem;">
-            <p style="font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: #92400e; margin-bottom: 0.5rem; font-weight: 700;">Latest Edition</p>
-            <h2 style="font-size: 2.5rem; font-weight: 900; color: #1c1917; letter-spacing: -0.02em; text-transform: uppercase;">Fresh From The Collection</h2>
-        </div>
+<!-- Articles Section -->
+@if($articles->count() > 0)
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Latest Articles</h2>
+        <p class="section-subtitle">Thoughtfully written perspectives and insights</p>
     </div>
     
-    <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 2rem; margin-bottom: 6rem;">
-        @php
-            // Reorganize content with alternating patterns per row
-            $articles = $articles->take(2);
-            $images = $images->take(2);
-            $books = $books->take(2);
-            
-            $orderedContent = collect();
-            
-            // Row 1: Article, Image, Book
-            if (isset($articles[0])) {
-                $orderedContent->push(['type' => 'article', 'item' => $articles[0]]);
-            }
-            if (isset($images[0])) {
-                $orderedContent->push(['type' => 'image', 'item' => $images[0]]);
-            }
-            if (isset($books[0])) {
-                $orderedContent->push(['type' => 'book', 'item' => $books[0]]);
-            }
-            
-            // Row 2: Image, Book, Article
-            if (isset($images[1])) {
-                $orderedContent->push(['type' => 'image', 'item' => $images[1]]);
-            }
-            if (isset($books[1])) {
-                $orderedContent->push(['type' => 'book', 'item' => $books[1]]);
-            }
-            if (isset($articles[1])) {
-                $orderedContent->push(['type' => 'article', 'item' => $articles[1]]);
-            }
-        @endphp
-        
-        @forelse($orderedContent as $index => $content)
-            @php
-                // Define sizes based on content type - smaller to fit 3 per row
-                if ($content['type'] === 'article') {
-                    $size = ['span' => 5, 'height' => '240px']; // Wide for articles
-                } elseif ($content['type'] === 'book') {
-                    $size = ['span' => 3, 'height' => '280px']; // Narrow/tall for book covers
-                } else { // image
-                    $size = ['span' => 4, 'height' => 'auto']; // Variable height for images
-                }
-            @endphp
-            @if($content['type'] === 'article')
-                <!-- Article Exhibit -->
-                <div class="exhibit-item" style="grid-column: span {{ $size['span'] }}; background: white; border: 3px solid #1c1917; padding: 0; transition: all 0.3s; position: relative; box-shadow: 6px 6px 0 #fef3c7; text-align: left; cursor: pointer;" onmouseover="this.style.transform='translate(-4px, -4px)'; this.style.boxShadow='10px 10px 0 #d97706'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #fef3c7'">
-                    <a href="{{ route('articles.show', $content['item']) }}" style="display: block; position: relative; height: {{ $size['height'] }}; overflow: hidden; background: #fafaf9;">
-                        @if($content['item']->featured_image)
-                            <img src="{{ asset('storage/' . $content['item']->featured_image) }}" 
-                                 alt="{{ $content['item']->title }}"
-                                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                        @else
-                            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #d97706 0%, #ea580c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 5rem;">
-                                📰
-                            </div>
-                        @endif
-                    </a>
-                    
-                    <div style="padding: 1.5rem; background: #fafaf9;">
-                        <h3 class="accent-line" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.75rem; color: #1c1917; line-height: 1.3;">
-                            <a href="{{ route('articles.show', $content['item']) }}" style="color: #1c1917; text-decoration: none;">
-                                {{ $content['item']->title }}
-                            </a>
-                        </h3>
-                        
-                        <p style="color: #78716c; font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                            {{ $content['item']->excerpt ?? strip_tags($content['item']->content) }}
-                        </p>
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center; color: #a8a29e; font-size: 0.75rem; padding-top: 1rem; border-top: 2px solid #e7e5e4;">
-                            <span style="font-weight: 600;">{{ $content['item']->author }}</span>
-                            <span>{{ $content['item']->created_at->format('M d, Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-            
-            @elseif($content['type'] === 'image')
-                <!-- Image Exhibit -->
-                <div class="exhibit-item" style="grid-column: span {{ $size['span'] }}; background: white; border: 3px solid #1c1917; padding: 0; transition: all 0.3s; position: relative; box-shadow: 6px 6px 0 #dbeafe; text-align: left; cursor: pointer;" onmouseover="this.style.transform='translate(-4px, -4px)'; this.style.boxShadow='10px 10px 0 #0c4a6e'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #dbeafe'">
-                    <a href="{{ route('images.show', $content['item']) }}" style="display: block; position: relative; background: #fafaf9;">
-                        <img src="{{ asset('storage/' . $content['item']->image_path) }}" 
-                             alt="{{ $content['item']->title }}"
-                             style="width: 100%; height: auto; display: block;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                    </a>
-                    
-                    <div style="padding: 1.5rem; background: #fafaf9;">
-                        <h3 class="accent-line" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; color: #1c1917; line-height: 1.3;">
-                            <a href="{{ route('images.show', $content['item']) }}" style="color: #1c1917; text-decoration: none;">
-                                {{ Str::limit($content['item']->title, 40) }}
-                            </a>
-                        </h3>
-                        
-                        @if($content['item']->photographer)
-                            <p style="color: #78716c; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
-                                {{ $content['item']->photographer }}
-                            </p>
-                        @endif
-                        
-                        <p style="color: #a8a29e; font-size: 0.75rem; margin-top: 0.5rem;">
-                            {{ $content['item']->created_at->format('M d, Y') }}
-                        </p>
-                    </div>
-                </div>
-            
-            @elseif($content['type'] === 'book')
-                <!-- Book Exhibit -->
-                <div class="exhibit-item" style="grid-column: span {{ $size['span'] }}; background: white; border: 3px solid #1c1917; padding: 0; transition: all 0.3s; position: relative; box-shadow: 6px 6px 0 #e0e7ff; text-align: left; cursor: pointer;" onmouseover="this.style.transform='translate(-4px, -4px)'; this.style.boxShadow='10px 10px 0 #4338ca'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #e0e7ff'">
-                    <div style="position: relative; overflow: hidden; height: {{ $size['height'] }}; background: #fafaf9; display: flex; align-items: center; justify-content: center;">
-                        @if($content['item']->cover_image)
-                            <img src="{{ asset('storage/' . $content['item']->cover_image) }}" 
-                                 alt="{{ $content['item']->title }}"
-                                 style="width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                        @else
-                            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 5rem;">
-                                📚
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <div style="padding: 1.5rem; background: #fafaf9;">
-                        <h3 class="accent-line" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; color: #1c1917; line-height: 1.3;">
-                            <a href="{{ route('books.show', $content['item']) }}" style="color: #1c1917; text-decoration: none;">
-                                {{ Str::limit($content['item']->title, 50) }}
-                            </a>
-                        </h3>
-                        
-                        <p style="color: #78716c; font-size: 0.875rem; font-weight: 600;">
-                            by {{ $content['item']->author }}
-                        </p>
-                    </div>
-                </div>
+    <div class="gallery-grid">
+        @foreach($articles->take(3) as $article)
+        <a href="{{ route('articles.show', $article) }}" class="gallery-item">
+            @if($article->featured_image)
+                <img src="{{ asset('storage/' . $article->featured_image) }}" 
+                     alt="{{ $article->title }}" 
+                     class="gallery-image">
+            @else
+                <div class="gallery-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
             @endif
-        @empty
-            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: #fef3c7; border: 3px dashed #d97706;">
-                <p style="color: #92400e; font-size: 1.25rem; font-weight: 700;">🎨 Gallery Opening Soon</p>
+            
+            <div class="gallery-content">
+                <div class="gallery-type">Article</div>
+                <h3 class="gallery-title">{{ Str::limit($article->title, 60) }}</h3>
+                <div class="gallery-meta">
+                    By {{ $article->user->name ?? 'Unknown' }} • {{ $article->created_at->format('M d, Y') }}
+                </div>
+                <p class="gallery-excerpt">{{ Str::limit(strip_tags($article->content), 100) }}</p>
             </div>
-        @endforelse
+        </a>
+        @endforeach
     </div>
     
-    <!-- Navigation to Collections - Modern Cards -->
-    <div style="margin-top: 5rem;">
-        <div style="border-left: 6px solid #0c4a6e; padding-left: 1.5rem; margin-bottom: 3rem;">
-            <p style="font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: #0c4a6e; margin-bottom: 0.5rem; font-weight: 700;">Explore More</p>
-            <h2 style="font-size: 2.5rem; font-weight: 900; color: #1c1917; letter-spacing: -0.02em; text-transform: uppercase;">Browse Collections</h2>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
-            <a href="{{ route('articles.index') }}" style="text-decoration: none; background: white; border: 3px solid #1c1917; padding: 3rem 2rem; transition: all 0.3s; position: relative; box-shadow: 6px 6px 0 #fef3c7; text-align: center;" onmouseover="this.style.transform='translate(-4px, -4px)'; this.style.boxShadow='10px 10px 0 #d97706'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #fef3c7'">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📰</div>
-                <p style="font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: #d97706; margin-bottom: 0.5rem; font-weight: 800;">Collection</p>
-                <h3 style="font-size: 1.5rem; font-weight: 900; color: #1c1917; text-transform: uppercase; letter-spacing: -0.01em;">Articles</h3>
-                <div style="width: 60px; height: 3px; background: #d97706; margin: 1rem auto 0;"></div>
-            </a>
-            
-            <a href="{{ route('books.index') }}" style="text-decoration: none; background: white; border: 3px solid #1c1917; padding: 3rem 2rem; transition: all 0.3s; position: relative; box-shadow: 6px 6px 0 #e0e7ff; text-align: center;" onmouseover="this.style.transform='translate(-4px, -4px)'; this.style.boxShadow='10px 10px 0 #4338ca'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #e0e7ff'">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
-                <p style="font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6366f1; margin-bottom: 0.5rem; font-weight: 800;">Collection</p>
-                <h3 style="font-size: 1.5rem; font-weight: 900; color: #1c1917; text-transform: uppercase; letter-spacing: -0.01em;">Literature</h3>
-                <div style="width: 60px; height: 3px; background: #6366f1; margin: 1rem auto 0;"></div>
-            </a>
-            
-            <a href="{{ route('images.index') }}" style="text-decoration: none; background: white; border: 3px solid #1c1917; padding: 3rem 2rem; transition: all 0.3s; position: relative; box-shadow: 6px 6px 0 #dbeafe; text-align: center;" onmouseover="this.style.transform='translate(-4px, -4px)'; this.style.boxShadow='10px 10px 0 #0c4a6e'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #dbeafe'">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🖼️</div>
-                <p style="font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: #0c4a6e; margin-bottom: 0.5rem; font-weight: 800;">Collection</p>
-                <h3 style="font-size: 1.5rem; font-weight: 900; color: #1c1917; text-transform: uppercase; letter-spacing: -0.01em;">Visual Art</h3>
-                <div style="width: 60px; height: 3px; background: #0c4a6e; margin: 1rem auto 0;"></div>
-            </a>
-        </div>
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="{{ route('articles.index') }}" class="btn">View All Articles</a>
     </div>
 </section>
+@endif
 
-<!-- Call to Action -->
-@guest
-    <div style="max-width: 1400px; margin: 0 auto 4rem; padding: 0 2rem;">
-        <div style="background: linear-gradient(135deg, #1c1917 0%, #292524 100%); padding: 5rem 3rem; border: 4px solid #fbbf24; position: relative; overflow: hidden; box-shadow: 8px 8px 0 #fef3c7;">
-            <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%); animation: float 8s ease-in-out infinite;"></div>
-            <div style="position: absolute; bottom: -80px; left: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(217, 119, 6, 0.1) 0%, transparent 70%);"></div>
-            
-            <div style="position: relative; z-index: 1; text-align: center;">
-                <p style="font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: #fbbf24; margin-bottom: 1rem; font-weight: 800;">✨ Join The Movement</p>
-                <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem; color: white; text-transform: uppercase; letter-spacing: -0.02em;">Become A Contributor</h2>
-                <p style="color: #d6d3d1; font-size: 1.125rem; margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.7; font-weight: 500;">Share your stories, showcase your art, and connect with a community of passionate creators</p>
-                <a href="{{ route('register') }}" style="padding: 1.25rem 3.5rem; background: #fbbf24; color: #1c1917; text-decoration: none; font-weight: 900; letter-spacing: 0.05em; font-size: 0.95rem; text-transform: uppercase; transition: all 0.3s; display: inline-block; border: 3px solid #fbbf24; box-shadow: 6px 6px 0 #d97706;" onmouseover="this.style.transform='translate(-3px, -3px)'; this.style.boxShadow='9px 9px 0 #d97706'" onmouseout="this.style.transform='translate(0, 0)'; this.style.boxShadow='6px 6px 0 #d97706'">Start Creating Today</a>
-            </div>
-        </div>
+<!-- Books Section -->
+@if($books->count() > 0)
+<section class="section" style="background: var(--white);">
+    <div class="section-header">
+        <h2 class="section-title">Featured Books</h2>
+        <p class="section-subtitle">Carefully selected literary works</p>
     </div>
+    
+    <div class="gallery-grid">
+        @foreach($books->take(3) as $book)
+        <a href="{{ route('books.show', $book) }}" class="gallery-item">
+            @if($book->cover_image)
+                <img src="{{ asset('storage/' . $book->cover_image) }}" 
+                     alt="{{ $book->title }}" 
+                     class="gallery-image" style="object-fit: contain; background: #f9f9f9;">
+            @else
+                <div class="gallery-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+            @endif
+            
+            <div class="gallery-content">
+                <div class="gallery-type">Book</div>
+                <h3 class="gallery-title">{{ Str::limit($book->title, 50) }}</h3>
+                <div class="gallery-meta">
+                    By {{ $book->author }} 
+                    @if($book->publication_year)
+                        • {{ $book->publication_year }}
+                    @endif
+                </div>
+                <p class="gallery-excerpt">{{ Str::limit($book->description, 100) }}</p>
+            </div>
+        </a>
+        @endforeach
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="{{ route('books.index') }}" class="btn">View All Books</a>
+    </div>
+</section>
+@endif
+
+<!-- Images Section -->
+@if($images->count() > 0)
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Visual Collection</h2>
+        <p class="section-subtitle">Stunning imagery and creative works</p>
+    </div>
+    
+    <div class="gallery-grid">
+        @foreach($images->take(3) as $image)
+        <a href="{{ route('images.show', $image) }}" class="gallery-item">
+            <img src="{{ asset('storage/' . $image->image_path) }}" 
+                 alt="{{ $image->title }}" 
+                 class="gallery-image">
+            
+            <div class="gallery-content">
+                <div class="gallery-type">Image</div>
+                <h3 class="gallery-title">{{ Str::limit($image->title, 50) }}</h3>
+                @if($image->photographer)
+                    <div class="gallery-meta">By {{ $image->photographer }}</div>
+                @endif
+                @if($image->description)
+                    <p class="gallery-excerpt">{{ Str::limit($image->description, 100) }}</p>
+                @endif
+            </div>
+        </a>
+        @endforeach
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="{{ route('images.index') }}" class="btn">View Full Collection</a>
+    </div>
+</section>
+@endif
+
+<!-- Empty State -->
+@if($articles->count() === 0 && $books->count() === 0 && $images->count() === 0)
+<section class="section">
+    <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Nothing Here Yet</h2>
+        <p style="font-size: 1.1rem;">Be the first to contribute to our collection.</p>
+    </div>
+</section>
+@endif
+
+<!-- CTA Section -->
+@guest
+<section class="cta-section">
+    <div class="cta-content">
+        <h2 class="cta-title">Join Our Community</h2>
+        <p class="cta-text">
+            Share your stories, showcase your work, and connect with fellow creators. 
+            Start contributing to our curated collection today.
+        </p>
+        <a href="{{ route('register') }}" class="btn-cta">Get Started</a>
+    </div>
+</section>
 @endguest
-@endsection
+@endSection

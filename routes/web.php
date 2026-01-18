@@ -65,8 +65,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
-    // Content Management Dashboard - This is the main content management page
-    Route::get('/content', [AdminController::class, 'content'])->name('content.index');
     
     // User Management - COMPLETE CRUD
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
@@ -77,7 +75,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
     
-    // Individual content creation/editing routes (these stay separate)
+    // Articles - COMPLETE CRUD
+    Route::get('/articles', [AdminController::class, 'articles'])->name('articles.index');
     Route::get('/articles/create', [AdminController::class, 'createArticle'])->name('articles.create');
     Route::post('/articles', [AdminController::class, 'storeArticle'])->name('articles.store');
     Route::get('/articles/{article}', [AdminController::class, 'showArticle'])->name('articles.show');
@@ -85,6 +84,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/articles/{article}', [AdminController::class, 'updateArticle'])->name('articles.update');
     Route::delete('/articles/{article}', [AdminController::class, 'destroyArticle'])->name('articles.destroy');
     
+    // Books - COMPLETE CRUD
+    Route::get('/books', [AdminController::class, 'books'])->name('books.index');
     Route::get('/books/create', [AdminController::class, 'createBook'])->name('books.create');
     Route::post('/books', [AdminController::class, 'storeBook'])->name('books.store');
     Route::get('/books/{book}', [AdminController::class, 'showBook'])->name('books.show');
@@ -92,6 +93,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/books/{book}', [AdminController::class, 'updateBook'])->name('books.update');
     Route::delete('/books/{book}', [AdminController::class, 'destroyBook'])->name('books.destroy');
     
+    // Images - COMPLETE CRUD
+    Route::get('/images', [AdminController::class, 'images'])->name('images.index');
     Route::get('/images/create', [AdminController::class, 'createImage'])->name('images.create');
     Route::post('/images', [AdminController::class, 'storeImage'])->name('images.store');
     Route::get('/images/{image}', [AdminController::class, 'showImage'])->name('images.show');

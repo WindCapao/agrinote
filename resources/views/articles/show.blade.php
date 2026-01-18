@@ -3,139 +3,398 @@
 @section('title', $article->title . ' - Contently')
 
 @section('content')
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-                <!-- Back to Articles button -->
-                <div style="margin-bottom: 1rem;">
-                    <a href="{{ route('articles.index') }}"
-                       style="background: #f3f4f6; 
-                              color: #374151; 
-                              padding: 0.5rem 1rem; 
-                              border-radius: 0.375rem; 
-                              text-decoration: none; 
-                              font-weight: 600;
-                              display: inline-block;">
-                        Back to Articles
-                    </a>
-                </div>
-                <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">{{ $article->title }}</h1>
-                <p style="color: #6b7280;">Article Details</p>
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-                @auth
-                    @if(auth()->user()->role === 'admin' || auth()->user()->id === $article->user_id)
-                        <a href="{{ route('articles.edit', $article) }}"
-                           style="background: #2563eb; 
-                                  color: white; 
-                                  padding: 0.5rem 1rem; 
-                                  border-radius: 0.375rem; 
-                                  text-decoration: none; 
-                                  font-weight: 600;">
-                            Edit
-                        </a>
-                        <form method="POST" action="{{ route('articles.destroy', $article) }}" 
-                              onsubmit="return confirm('Are you sure you want to delete this article?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    style="background: #dc2626; 
-                                           color: white; 
-                                           padding: 0.5rem 1rem; 
-                                           border-radius: 0.375rem; 
-                                           border: none; 
-                                           font-weight: 600; 
-                                           cursor: pointer;">
-                                Delete
-                            </button>
-                        </form>
-                    @endif
-                @endauth
-            </div>
-        </div>
-    </div>
+<style>
+    .article-hero {
+        background: var(--white);
+        padding: 4rem 2rem 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .article-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .article-category {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .article-title {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+    
+    .article-meta-bar {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding: 1.5rem 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 2rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .meta-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    
+    .meta-value {
+        font-size: 0.95rem;
+        color: var(--primary);
+        font-weight: 600;
+    }
+    
+    .article-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .article-featured-image {
+        width: 100%;
+        max-height: 600px;
+        object-fit: cover;
+        margin: 3rem 0;
+        border: 1px solid var(--border);
+    }
+    
+    .article-body {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    
+    .article-content {
+        font-size: 1.15rem;
+        line-height: 1.9;
+        color: var(--text);
+        margin-bottom: 3rem;
+    }
+    
+    .article-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .article-tags {
+        padding: 2rem 0;
+        border-top: 2px solid var(--border);
+        border-bottom: 2px solid var(--border);
+    }
+    
+    .tags-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .tag {
+        padding: 0.5rem 1.25rem;
+        background: var(--white);
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all 0.3s;
+    }
+    
+    .tag:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+    
+    .article-footer {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 3rem 2rem;
+        background: var(--secondary);
+        border: 1px solid var(--border);
+    }
+    
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .author-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .author-details {
+        flex: 1;
+    }
+    
+    .author-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .author-name {
+        font-size: 1.5rem;
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .author-email {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 2px solid;
+        margin-top: 1rem;
+    }
+    
+    .status-published {
+        background: #d1fae5;
+        border-color: #059669;
+        color: #065f46;
+    }
+    
+    .status-draft {
+        background: #f3f4f6;
+        border-color: #6b7280;
+        color: #374151;
+    }
+    
+    .status-pending {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+    
+    .status-rejected {
+        background: #fee2e2;
+        border-color: #dc2626;
+        color: #991b1b;
+    }
+    
+    .btn-edit {
+        padding: 0.75rem 2rem;
+        background: var(--primary);
+        color: var(--white);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-edit:hover {
+        background: var(--white);
+        color: var(--primary);
+    }
+    
+    .btn-delete {
+        padding: 0.75rem 2rem;
+        background: #dc2626;
+        color: var(--white);
+        border: 2px solid #dc2626;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-delete:hover {
+        background: var(--white);
+        color: #dc2626;
+    }
+    
+    .btn-back {
+        padding: 0.75rem 2rem;
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-back:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+    
+    @media (max-width: 768px) {
+        .article-title {
+            font-size: 2.5rem;
+        }
+        
+        .article-meta-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .article-actions {
+            flex-direction: column;
+        }
+    }
+</style>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-        <!-- Article Content -->
-        <div style="background: white; border-radius: 0.75rem; padding: 2rem; border: 1px solid #e5e7eb;">
-            @if($article->featured_image)
-                <img src="{{ asset('storage/' . $article->featured_image) }}" 
-                     alt="{{ $article->title }}"
-                     style="width: 100%; 
-                            height: 300px; 
-                            object-fit: cover; 
-                            border-radius: 0.5rem; 
-                            margin-bottom: 1.5rem;">
+<article>
+    <!-- Article Hero -->
+    <div class="article-hero">
+        <div class="article-container">
+            @if($article->categories->count() > 0)
+                <div class="article-category">
+                    {{ $article->categories->pluck('name')->join(' • ') }}
+                </div>
             @endif
             
-            <div style="margin-bottom: 2rem;">
-                <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Content</h2>
-                <div style="line-height: 1.6; color: #374151;">
-                    {!! nl2br(e($article->content)) !!}
-                </div>
-            </div>
-        </div>
-
-        <!-- Article Info -->
-        <div style="background: white; border-radius: 0.75rem; padding: 2rem; border: 1px solid #e5e7eb;">
-            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem;">Article Information</h2>
+            <h1 class="article-title">{{ $article->title }}</h1>
             
-            <div style="margin-bottom: 1.5rem;">
-                <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem;">Status</div>
-                @php
-                    $statusColors = [
-                        'published' => ['bg' => '#d1fae5', 'text' => '#065f46'],
-                        'draft' => ['bg' => '#e5e7eb', 'text' => '#374151'],
-                        'pending' => ['bg' => '#fef3c7', 'text' => '#92400e'],
-                        'rejected' => ['bg' => '#fee2e2', 'text' => '#991b1b'],
-                    ];
-                    $color = $statusColors[$article->status] ?? $statusColors['draft'];
-                @endphp
-                <span style="padding: 0.5rem 1rem; 
-                           border-radius: 0.375rem; 
-                           font-size: 0.875rem; 
-                           font-weight: 600;
-                           background: {{ $color['bg'] }};
-                           color: {{ $color['text'] }};
-                           display: inline-block;">
+            <div class="article-meta-bar">
+                <div class="meta-item">
+                    <span class="meta-label">Author</span>
+                    <span class="meta-value">{{ $article->user->name ?? 'Anonymous' }}</span>
+                </div>
+                
+                <div class="meta-item">
+                    <span class="meta-label">Published</span>
+                    <span class="meta-value">{{ $article->created_at->format('F d, Y') }}</span>
+                </div>
+                
+                @if($article->updated_at->ne($article->created_at))
+                    <div class="meta-item">
+                        <span class="meta-label">Updated</span>
+                        <span class="meta-value">{{ $article->updated_at->format('F d, Y') }}</span>
+                    </div>
+                @endif
+            </div>
+            
+            <!-- Status Badge (only visible to author and admin) -->
+            @if(auth()->check() && (auth()->id() === $article->user_id || auth()->user()->isAdmin()))
+                <span class="status-badge status-{{ $article->status }}">
                     {{ ucfirst($article->status) }}
                 </span>
-            </div>
+            @endif
             
-            <div style="margin-bottom: 1.5rem;">
-                <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem;">Author</div>
-                <div style="font-weight: 600;">{{ $article->user->name ?? 'Unknown' }}</div>
-                <div style="color: #6b7280; font-size: 0.875rem;">{{ $article->user->email ?? '' }}</div>
-            </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem;">Created</div>
-                <div style="font-weight: 600;">{{ $article->created_at->format('M d, Y g:i A') }}</div>
-            </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.25rem;">Last Updated</div>
-                <div style="font-weight: 600;">{{ $article->updated_at->format('M d, Y g:i A') }}</div>
-            </div>
-            
-            @if($article->categories->count() > 0)
-                <div>
-                    <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Categories</div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                        @foreach($article->categories as $category)
-                            <span style="padding: 0.25rem 0.75rem; 
-                                       background: #e5e7eb; 
-                                       color: #374151; 
-                                       border-radius: 9999px; 
-                                       font-size: 0.875rem;">
-                                {{ $category->name }}
-                            </span>
-                        @endforeach
-                    </div>
+            <!-- Action Buttons (only for author and admin) -->
+            @if(auth()->check() && (auth()->id() === $article->user_id || auth()->user()->isAdmin()))
+                <div class="article-actions">
+                    <a href="{{ route('articles.edit', $article) }}" class="btn-edit">Edit Article</a>
+                    
+                    <form method="POST" action="{{ route('articles.destroy', $article) }}" 
+                          onsubmit="return confirm('Are you sure you want to delete this article?')" 
+                          style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                    
+                    <a href="{{ route('articles.index') }}" class="btn-back">Back to Articles</a>
+                </div>
+            @else
+                <div class="article-actions">
+                    <a href="{{ route('articles.index') }}" class="btn-back">Back to Articles</a>
                 </div>
             @endif
         </div>
     </div>
-</div>
+    
+    <!-- Featured Image -->
+    @if($article->featured_image)
+        <div class="article-container">
+            <img src="{{ asset('storage/' . $article->featured_image) }}" 
+                 alt="{{ $article->title }}" 
+                 class="article-featured-image">
+        </div>
+    @endif
+    
+    <!-- Article Body -->
+    <div class="article-body">
+        <div class="article-content">
+            {!! nl2br(e($article->content)) !!}
+        </div>
+        
+        <!-- Tags/Categories -->
+        @if($article->categories->count() > 0)
+            <div class="article-tags">
+                <div class="tags-label">Filed Under</div>
+                <div class="tags-list">
+                    @foreach($article->categories as $category)
+                        <span class="tag">{{ $category->name }}</span>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+    
+    <!-- Author Info -->
+    <div class="article-footer">
+        <div class="author-info">
+            <div class="author-avatar">
+                {{ strtoupper(substr($article->user->name ?? 'A', 0, 1)) }}
+            </div>
+            <div class="author-details">
+                <div class="author-label">Written By</div>
+                <div class="author-name">{{ $article->user->name ?? 'Anonymous' }}</div>
+                @if($article->user->email)
+                    <div class="author-email">{{ $article->user->email }}</div>
+                @endif
+            </div>
+        </div>
+    </div>
+</article>
 @endsection

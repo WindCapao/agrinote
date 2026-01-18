@@ -43,18 +43,64 @@ class AdminController extends Controller
         
         // Total pending items (for quick access)
         $totalPending = $pendingArticles + $pendingBooks + $pendingImages;
+        
+        // Variables for the dashboard view
+        $totalArticles = $articleCount;
+        $totalBooks = $bookCount;
+        $totalImages = $imageCount;
+        $totalUsers = $userCount;
+        
+        // Recent users (registered in the last 7 days)
+        $recentUsers = User::where('created_at', '>=', now()->subDays(7))->count();
+        
+        // Recent activity - get latest 10 items from all content types
+        $recentArticles = Article::with('user')->latest()->limit(5)->get()->map(function($article) {
+            return (object)[
+                'type' => 'article',
+                'description' => "New article: \"{$article->title}\" by {$article->user->name}",
+                'created_at' => $article->created_at,
+            ];
+        });
+        
+        $recentBooks = Book::with('user')->latest()->limit(5)->get()->map(function($book) {
+            return (object)[
+                'type' => 'book',
+                'description' => "New book: \"{$book->title}\" by {$book->author}",
+                'created_at' => $book->created_at,
+            ];
+        });
+        
+        $recentImages = Image::with('user')->latest()->limit(5)->get()->map(function($image) {
+            return (object)[
+                'type' => 'image',
+                'description' => "New image: \"{$image->title}\" uploaded",
+                'created_at' => $image->created_at,
+            ];
+        });
+        
+        $recentActivity = $recentArticles
+            ->concat($recentBooks)
+            ->concat($recentImages)
+            ->sortByDesc('created_at')
+            ->take(10);
 
         return view('admin.dashboard', compact(
             'articleCount', 'publishedArticles', 'draftArticles', 'pendingArticles', 'rejectedArticles',
             'bookCount', 'publishedBooks', 'draftBooks', 'pendingBooks', 'rejectedBooks',
             'imageCount', 'publishedImages', 'draftImages', 'pendingImages', 'rejectedImages',
-            'userCount', 'totalPending'
+            'userCount', 'totalPending',
+            'totalArticles', 'totalBooks', 'totalImages', 'totalUsers', 'recentUsers', 'recentActivity'
         ));
     }
     
-    // REMOVED: public function articles() - This is now handled by the content() method
-    // REMOVED: public function books() - This is now handled by the content() method
-    // REMOVED: public function images() - This is now handled by the content() method
+    /**
+     * List all articles
+     */
+    public function articles()
+    {
+        $articles = Article::with(['user', 'categories'])->latest()->paginate(15);
+        return view('admin.articles.index', compact('articles'));
+    }
 
     /**
      * Show form to create new article
@@ -94,8 +140,7 @@ class AdminController extends Controller
 
         $article->categories()->attach($validated['categories']);
 
-        // Redirect to content page with articles tab
-        return redirect()->route('admin.content.index', ['tab' => 'articles'])
+        return redirect()->route('admin.articles.index')
             ->with('success', 'Article created successfully!');
     }
 
@@ -145,8 +190,7 @@ class AdminController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($oldImage);
         }
 
-        // Redirect to content page with articles tab
-        return redirect()->route('admin.content.index', ['tab' => 'articles'])
+        return redirect()->route('admin.articles.index')
             ->with('success', 'Article updated successfully!');
     }
 
@@ -162,8 +206,7 @@ class AdminController extends Controller
         $articleTitle = $article->title;
         $article->delete();
 
-        // Redirect to content page with articles tab
-        return redirect()->route('admin.content.index', ['tab' => 'articles'])
+        return redirect()->route('admin.articles.index')
             ->with('success', "Article '$articleTitle' has been deleted!");
     }
     
@@ -276,6 +319,15 @@ class AdminController extends Controller
     }
 
     /**
+     * List all books
+     */
+    public function books()
+    {
+        $books = Book::with(['user', 'categories'])->latest()->paginate(15);
+        return view('admin.books.index', compact('books'));
+    }
+
+    /**
      * Show form to create new book
      */
     public function createBook()
@@ -323,8 +375,7 @@ class AdminController extends Controller
 
         $book->categories()->attach($validated['categories']);
 
-        // Redirect to content page with books tab
-        return redirect()->route('admin.content.index', ['tab' => 'books'])
+        return redirect()->route('admin.books.index')
             ->with('success', 'Book created successfully!');
     }
 
@@ -378,8 +429,7 @@ class AdminController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($oldImage);
         }
 
-        // Redirect to content page with books tab
-        return redirect()->route('admin.content.index', ['tab' => 'books'])
+        return redirect()->route('admin.books.index')
             ->with('success', 'Book updated successfully!');
     }
 
@@ -395,9 +445,17 @@ class AdminController extends Controller
         $bookTitle = $book->title;
         $book->delete();
 
-        // Redirect to content page with books tab
-        return redirect()->route('admin.content.index', ['tab' => 'books'])
+        return redirect()->route('admin.books.index')
             ->with('success', "Book '$bookTitle' has been deleted!");
+    }
+
+    /**
+     * List all images
+     */
+    public function images()
+    {
+        $images = Image::with(['user', 'categories'])->latest()->paginate(15);
+        return view('admin.images.index', compact('images'));
     }
 
     /**
@@ -448,8 +506,7 @@ class AdminController extends Controller
 
         $image->categories()->attach($validated['categories']);
 
-        // Redirect to content page with images tab
-        return redirect()->route('admin.content.index', ['tab' => 'images'])
+        return redirect()->route('admin.images.index')
             ->with('success', 'Image uploaded successfully!');
     }
 
@@ -507,8 +564,7 @@ class AdminController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($oldImage);
         }
 
-        // Redirect to content page with images tab
-        return redirect()->route('admin.content.index', ['tab' => 'images'])
+        return redirect()->route('admin.images.index')
             ->with('success', 'Image updated successfully!');
     }
 
@@ -524,43 +580,7 @@ class AdminController extends Controller
         $imageTitle = $image->title;
         $image->delete();
 
-        // Redirect to content page with images tab
-        return redirect()->route('admin.content.index', ['tab' => 'images'])
+        return redirect()->route('admin.images.index')
             ->with('success', "Image '$imageTitle' has been deleted!");
-    }
-
-    /**
-     * Display content management dashboard with tabs
-     */
-    public function content(Request $request)
-    {
-        $tab = $request->query('tab', 'articles');
-        
-        // Get items based on tab
-        $query = null;
-        $count = 0;
-        
-        if ($tab === 'articles') {
-            $query = Article::with('user')->latest();
-            $count = Article::count();
-        } elseif ($tab === 'books') {
-            $query = Book::with('user')->latest();
-            $count = Book::count();
-        } elseif ($tab === 'images') {
-            $query = Image::with('user')->latest();
-            $count = Image::count();
-        }
-        
-        $items = $query->paginate(10, ['*'], $tab . '_page');
-        
-        // Get counts for all tabs
-        $articlesCount = Article::count();
-        $booksCount = Book::count();
-        $imagesCount = Image::count();
-        
-        return view('admin.content.index', compact(
-            'tab', 'items', 'count',
-            'articlesCount', 'booksCount', 'imagesCount'
-        ));
     }
 }

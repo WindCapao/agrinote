@@ -3,82 +3,392 @@
 @section('title', 'Content Approvals - Admin')
 
 @section('content')
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="margin-bottom: 2rem;">
-        <!-- Back to Dashboard Button -->
-        <div style="margin-bottom: 1rem;">
-            <a href="{{ route('admin.dashboard') }}"
-               style="background: #f3f4f6; 
-                      color: #374151; 
-                      padding: 0.5rem 1rem; 
-                      border-radius: 0.375rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      display: inline-block;">
-                Back to Dashboard
-            </a>
-        </div>
+<style>
+    .page-header {
+        background: var(--white);
+        padding: 4rem 2rem 3rem;
+        text-align: center;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .page-title {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .page-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .page-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .content-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    
+    .approvals-tabs {
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 2.5rem;
+    }
+    
+    .tabs-container {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+    }
+    
+    .tab-item {
+        padding: 1.25rem 2rem;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--text-light);
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .tab-item:hover {
+        color: var(--primary);
+    }
+    
+    .tab-item.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+    
+    .tab-count {
+        background: #dc2626;
+        color: white;
+        border-radius: 9999px;
+        padding: 0.125rem 0.5rem;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .approvals-table {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    
+    .table-header {
+        background: var(--secondary);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .table-title {
+        font-size: 1.5rem;
+        color: var(--primary);
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .table-subtitle {
+        font-size: 0.95rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .table thead {
+        background: var(--secondary);
+    }
+    
+    .table th {
+        padding: 1.5rem 2rem;
+        text-align: left;
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.3s;
+    }
+    
+    .table tbody tr:hover {
+        background: rgba(0, 0, 0, 0.02);
+    }
+    
+    .table td {
+        padding: 1.5rem 2rem;
+        vertical-align: top;
+    }
+    
+    .item-title {
+        font-size: 1.125rem;
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .item-preview {
+        font-size: 0.95rem;
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+    
+    .author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .author-name {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .author-email {
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .date-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .date-main {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .date-time {
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border-radius: 4px;
+    }
+    
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-published {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .status-draft {
+        background: #f3f4f6;
+        color: #374151;
+    }
+    
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-approve {
+        padding: 0.5rem 1rem;
+        background: #16a34a;
+        color: white;
+        border: 2px solid #16a34a;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-approve:hover {
+        background: white;
+        color: #16a34a;
+    }
+    
+    .btn-reject {
+        padding: 0.5rem 1rem;
+        background: #dc2626;
+        color: white;
+        border: 2px solid #dc2626;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-reject:hover {
+        background: white;
+        color: #dc2626;
+    }
+    
+    .btn-view {
+        padding: 0.5rem 1rem;
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-view:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+    
+    .btn-back {
+        padding: 0.75rem 2rem;
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 0.5rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-back:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+    }
+    
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.2;
+    }
+    
+    .empty-title {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .empty-text {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .pagination {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
+        }
         
-        <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">Content Approvals</h1>
-        <p style="color: #6b7280;">Review and approve or reject pending submissions</p>
-    </div>
+        .table th,
+        .table td {
+            padding: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
 
+<div class="page-header">
+    <div class="page-container">
+        <h1 class="page-title">Content Approvals</h1>
+        <p class="page-subtitle">Review and manage pending submissions from the community</p>
+        
+        <div class="page-actions">
+            <a href="{{ route('admin.dashboard') }}" class="btn-back">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-section">
     <!-- Tabs -->
-    <div style="border-bottom: 2px solid #e5e7eb; margin-bottom: 2rem;">
-        <div style="display: flex; gap: 0.5rem;">
+    <div class="approvals-tabs">
+        <div class="tabs-container">
             <a href="{{ route('admin.approvals.index', ['tab' => 'articles']) }}" 
-               style="padding: 1rem 1.5rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      border-bottom: 3px solid {{ $tab === 'articles' ? '#2563eb' : 'transparent' }};
-                      color: {{ $tab === 'articles' ? '#2563eb' : '#6b7280' }};
-                      position: relative;">
+               class="tab-item {{ $tab === 'articles' ? 'active' : '' }}">
                 Articles
                 @if($articles->total() > 0)
-                    <span style="background: #dc2626; 
-                               color: white; 
-                               border-radius: 9999px; 
-                               padding: 0.125rem 0.5rem; 
-                               font-size: 0.75rem; 
-                               margin-left: 0.5rem;">
-                        {{ $articles->total() }}
-                    </span>
+                    <span class="tab-count">{{ $articles->total() }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.approvals.index', ['tab' => 'books']) }}" 
-               style="padding: 1rem 1.5rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      border-bottom: 3px solid {{ $tab === 'books' ? '#2563eb' : 'transparent' }};
-                      color: {{ $tab === 'books' ? '#2563eb' : '#6b7280' }};">
+               class="tab-item {{ $tab === 'books' ? 'active' : '' }}">
                 Books
                 @if($books->total() > 0)
-                    <span style="background: #dc2626; 
-                               color: white; 
-                               border-radius: 9999px; 
-                               padding: 0.125rem 0.5rem; 
-                               font-size: 0.75rem; 
-                               margin-left: 0.5rem;">
-                        {{ $books->total() }}
-                    </span>
+                    <span class="tab-count">{{ $books->total() }}</span>
                 @endif
             </a>
             <a href="{{ route('admin.approvals.index', ['tab' => 'images']) }}" 
-               style="padding: 1rem 1.5rem; 
-                      text-decoration: none; 
-                      font-weight: 600;
-                      border-bottom: 3px solid {{ $tab === 'images' ? '#2563eb' : 'transparent' }};
-                      color: {{ $tab === 'images' ? '#2563eb' : '#6b7280' }};">
+               class="tab-item {{ $tab === 'images' ? 'active' : '' }}">
                 Images
                 @if($images->total() > 0)
-                    <span style="background: #dc2626; 
-                               color: white; 
-                               border-radius: 9999px; 
-                               padding: 0.125rem 0.5rem; 
-                               font-size: 0.75rem; 
-                               margin-left: 0.5rem;">
-                        {{ $images->total() }}
-                    </span>
+                    <span class="tab-count">{{ $images->total() }}</span>
                 @endif
             </a>
         </div>
@@ -89,142 +399,127 @@
         $type  = $tab === 'books' ? 'books' : ($tab === 'images' ? 'images' : 'articles');
     @endphp
 
-    <!-- Content Table -->
-    <div style="border: 1px solid #e5e7eb; border-radius: 0.75rem; overflow: hidden; background: white;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead style="background: #f9fafb;">
-                <tr>
-                    <th style="text-align: left; padding: 1rem; font-weight: 700; color: #374151;">Title</th>
-                    <th style="text-align: left; padding: 1rem; font-weight: 700; color: #374151;">Submitted By</th>
-                    <th style="text-align: left; padding: 1rem; font-weight: 700; color: #374151;">Date</th>
-                    <th style="text-align: left; padding: 1rem; font-weight: 700; color: #374151;">Status</th>
-                    <th style="text-align: left; padding: 1rem; font-weight: 700; color: #374151;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($items as $item)
-                    <tr style="border-top: 1px solid #e5e7eb;">
-                        <td style="padding: 1rem;">
-                            <div style="font-weight: 600; color: #111827; margin-bottom: 0.25rem;">
-                                {{ Str::limit($item->title ?? 'Untitled', 50) }}
-                            </div>
-                            @if($tab === 'articles')
-                                <div style="color: #6b7280; font-size: 0.875rem;">
-                                    {{ Str::limit(strip_tags($item->content ?? ''), 80) }}
-                                </div>
-                            @elseif($tab === 'books')
-                                <div style="color: #6b7280; font-size: 0.875rem;">
-                                    by {{ $item->author ?? 'Unknown' }}
-                                </div>
-                            @endif
-                        </td>
-                        <td style="padding: 1rem;">
-                            <div style="font-weight: 500;">{{ $item->user->name ?? 'N/A' }}</div>
-                            <div style="color: #6b7280; font-size: 0.875rem;">{{ $item->user->email ?? '' }}</div>
-                        </td>
-                        <td style="padding: 1rem; color: #6b7280; font-size: 0.875rem;">
-                            {{ $item->created_at->format('M d, Y') }}<br>
-                            {{ $item->created_at->format('g:i A') }}
-                        </td>
-                        <td style="padding: 1rem;">
-                            <span style="padding: 0.25rem 0.75rem; 
-                                       border-radius: 9999px; 
-                                       font-size: 0.875rem; 
-                                       font-weight: 600;
-                                       background: #fef3c7;
-                                       color: #92400e;">
-                                {{ ucfirst($item->status) }}
-                            </span>
-                        </td>
-                        <td style="padding: 1rem;">
-                            <div style="display: flex; gap: 0.5rem;">
-                                <form method="POST" action="{{ route('admin.approvals.approve', ['type' => $type, 'id' => $item->id]) }}">
-                                    @csrf
-                                    <button type="submit"
-                                            onclick="return confirm('Approve this {{ rtrim($type, 's') }}?')"
-                                            style="background: #16a34a; 
-                                                   color: white; 
-                                                   border: none; 
-                                                   padding: 0.5rem 1rem; 
-                                                   border-radius: 0.375rem; 
-                                                   cursor: pointer;
-                                                   font-weight: 600;
-                                                   font-size: 0.875rem;">
-                                        Approve
-                                    </button>
-                                </form>
+    @if($items->count() > 0)
+        <div class="approvals-table">
+            <div class="table-header">
+                <h2 class="table-title">Pending {{ ucfirst($tab) }}</h2>
+                <p class="table-subtitle">Review the details and approve or reject submissions</p>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Submitted By</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($items as $item)
+                            <tr>
+                                <td>
+                                    <div class="item-title">{{ $item->title ?? 'Untitled' }}</div>
+                                    <div class="item-preview">
+                                        @if($tab === 'articles')
+                                            {{ Str::limit(strip_tags($item->content ?? ''), 100) }}
+                                        @elseif($tab === 'books')
+                                            by {{ $item->author ?? 'Unknown' }}
+                                            @if($item->description)
+                                                • {{ Str::limit($item->description, 80) }}
+                                            @endif
+                                        @elseif($tab === 'images')
+                                            @if($item->description)
+                                                {{ Str::limit($item->description, 80) }}
+                                            @elseif($item->photographer)
+                                                by {{ $item->photographer }}
+                                            @endif
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="author-info">
+                                        <div class="author-name">{{ $item->user->name ?? 'Anonymous' }}</div>
+                                        @if($item->user->email)
+                                            <div class="author-email">{{ $item->user->email }}</div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="date-info">
+                                        <div class="date-main">{{ $item->created_at->format('F d, Y') }}</div>
+                                        <div class="date-time">{{ $item->created_at->format('g:i A') }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ $item->status }}">
+                                        {{ ucfirst($item->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <form method="POST" action="{{ route('admin.approvals.approve', ['type' => $type, 'id' => $item->id]) }}" onsubmit="return confirm('Approve this {{ rtrim($type, 's') }}?')">
+                                            @csrf
+                                            <button type="submit" class="btn-approve">Approve</button>
+                                        </form>
 
-                                <form method="POST" action="{{ route('admin.approvals.reject', ['type' => $type, 'id' => $item->id]) }}">
-                                    @csrf
-                                    <button type="submit"
-                                            onclick="return confirm('Reject this {{ rtrim($type, 's') }}?')"
-                                            style="background: #dc2626; 
-                                                   color: white; 
-                                                   border: none; 
-                                                   padding: 0.5rem 1rem; 
-                                                   border-radius: 0.375rem; 
-                                                   cursor: pointer;
-                                                   font-weight: 600;
-                                                   font-size: 0.875rem;">
-                                        Reject
-                                    </button>
-                                </form>
+                                        <form method="POST" action="{{ route('admin.approvals.reject', ['type' => $type, 'id' => $item->id]) }}" onsubmit="return confirm('Reject this {{ rtrim($type, 's') }}?')">
+                                            @csrf
+                                            <button type="submit" class="btn-reject">Reject</button>
+                                        </form>
 
-                                @if($tab === 'articles')
-                                    <a href="{{ route('articles.show', $item) }}" 
-                                       target="_blank"
-                                       style="padding: 0.5rem 1rem; 
-                                              background: #f3f4f6; 
-                                              color: #374151; 
-                                              border-radius: 0.375rem; 
-                                              text-decoration: none;
-                                              font-weight: 600;
-                                              font-size: 0.875rem;">
-                                        View
-                                    </a>
-                                @elseif($tab === 'books')
-                                    <a href="{{ route('books.show', $item) }}" 
-                                       target="_blank"
-                                       style="padding: 0.5rem 1rem; 
-                                              background: #f3f4f6; 
-                                              color: #374151; 
-                                              border-radius: 0.375rem; 
-                                              text-decoration: none;
-                                              font-weight: 600;
-                                              font-size: 0.875rem;">
-                                        View
-                                    </a>
-                                @elseif($tab === 'images')
-                                    <a href="{{ route('images.show', $item) }}" 
-                                       target="_blank"
-                                       style="padding: 0.5rem 1rem; 
-                                              background: #f3f4f6; 
-                                              color: #374151; 
-                                              border-radius: 0.375rem; 
-                                              text-decoration: none;
-                                              font-weight: 600;
-                                              font-size: 0.875rem;">
-                                        View
-                                    </a>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" style="padding: 3rem; text-align: center; color: #6b7280;">
-                            <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No pending {{ $tab }}</div>
-                            <div style="font-size: 0.875rem;">All caught up! There are no items waiting for approval.</div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    <div style="margin-top: 1.5rem;">
-        {{ $items->appends(['tab' => $tab])->links() }}
-    </div>
+                                        @if($tab === 'articles')
+                                            <a href="{{ route('admin.articles.show', $item) }}" 
+                                               target="_blank"
+                                               class="btn-view">
+                                                View
+                                            </a>
+                                        @elseif($tab === 'books')
+                                            <a href="{{ route('admin.books.show', $item) }}" 
+                                               target="_blank"
+                                               class="btn-view">
+                                                View
+                                            </a>
+                                        @elseif($tab === 'images')
+                                            <a href="{{ route('admin.images.show', $item) }}" 
+                                               target="_blank"
+                                               class="btn-view">
+                                                View
+                                            </a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="pagination">
+            {{ $items->appends(['tab' => $tab])->links() }}
+        </div>
+    @else
+        <div class="empty-state">
+            <h2 class="empty-title">All Caught Up!</h2>
+            <p class="empty-text">There are no {{ $tab }} waiting for approval.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{{ route('admin.approvals.index', ['tab' => 'articles']) }}" 
+                   class="tab-item {{ $tab === 'articles' ? 'active' : '' }}">
+                    Check Articles
+                </a>
+                <a href="{{ route('admin.approvals.index', ['tab' => 'books']) }}" 
+                   class="tab-item {{ $tab === 'books' ? 'active' : '' }}">
+                    Check Books
+                </a>
+                <a href="{{ route('admin.approvals.index', ['tab' => 'images']) }}" 
+                   class="tab-item {{ $tab === 'images' ? 'active' : '' }}">
+                    Check Images
+                </a>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection

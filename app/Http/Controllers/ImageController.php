@@ -111,8 +111,8 @@ class ImageController extends Controller
     }
 
     /**
-     * Display the specified image
-     */
+ * Display the specified image
+ */
     public function show(Image $image)
     {
         // Allow viewing if: published, or owner, or admin
@@ -122,13 +122,22 @@ class ImageController extends Controller
             abort(403, 'This image is not available.');
         }
 
+        // Load categories and user
         $image->load(['user', 'categories']);
-        return view('images.show', compact('image'));
+        
+        // Get related images (same categories)
+        $relatedImages = Image::where('id', '!=', $image->id)
+            ->where('status', 'published')
+            ->whereHas('categories', function($query) use ($image) {
+                $query->whereIn('categories.id', $image->categories->pluck('id'));
+            })
+            ->with(['user', 'categories'])
+            ->limit(6)
+            ->get();
+        
+        return view('images.show', compact('image', 'relatedImages'));
     }
 
-    /**
-     * Show the form for editing the specified image
-     */
     public function edit(Image $image)
     {
         if (Auth::id() !== $image->user_id && !Auth::user()->isAdmin()) {
