@@ -9,22 +9,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/health', function () {
-    try {
-        // Check if app is running
-        return response()->json([
-            'status' => 'healthy',
-            'timestamp' => now()->toDateTimeString(),
-            'service' => config('app.name'),
-            'environment' => config('app.env'),
-            'debug' => config('app.debug')
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'unhealthy',
-            'error' => $e->getMessage()
-        ], 500);
-    }
+Route::get('/', function () {
+    return 'Laravel is running!';
 });
 
 // Redirect dashboard to home
