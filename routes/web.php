@@ -53,6 +53,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // User Dashboard/My Content
+    Route::get('/my-content', [ProfileController::class, 'myContent'])->name('my-content');
 });
 
 // PUBLIC SHOW ROUTES - These MUST come AFTER all /create routes

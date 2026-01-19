@@ -38,6 +38,37 @@ class ProfileController extends Controller
     }
 
     /**
+     * Show user's content (drafts, pending, published)
+     */
+    public function myContent()
+    {
+        $user = auth()->user();
+        
+        // Get all user's articles grouped by status
+        $articles = $user->articles()
+            ->with('categories')
+            ->latest()
+            ->get()
+            ->groupBy('status');
+        
+        // Get all user's books grouped by status
+        $books = $user->books()
+            ->with('categories')
+            ->latest()
+            ->get()
+            ->groupBy('status');
+        
+        // Get all user's images grouped by status
+        $images = $user->images()
+            ->with('categories')
+            ->latest()
+            ->get()
+            ->groupBy('status');
+        
+        return view('profile.my-content', compact('articles', 'books', 'images'));
+    }
+
+    /**
      * Delete user account
      */
     public function destroy(Request $request): RedirectResponse

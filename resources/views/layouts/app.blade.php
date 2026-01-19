@@ -236,6 +236,7 @@
                 <a href="{{ route('images.index') }}">Images</a>
                 
                 @auth
+                    <a href="{{ route('my-content') }}">My Content</a>
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}">Admin</a>
                     @endif
@@ -250,7 +251,7 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Login</a>
-                        <a href="{{ route('register') }}" class="btn" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Register</a>
+                        <a href="{{ route('register') }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Register</a>
                     @endauth
                 </div>
             </nav>

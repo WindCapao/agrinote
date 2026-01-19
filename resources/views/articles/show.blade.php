@@ -219,61 +219,114 @@
         color: #991b1b;
     }
     
-    .btn-edit {
-        padding: 0.75rem 2rem;
-        background: var(--primary);
-        color: var(--white);
-        border: 2px solid var(--primary);
-        font-weight: 700;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        text-decoration: none;
-        transition: all 0.3s;
-        display: inline-block;
-    }
-    
-    .btn-edit:hover {
-        background: var(--white);
-        color: var(--primary);
-    }
-    
-    .btn-delete {
-        padding: 0.75rem 2rem;
-        background: #dc2626;
-        color: var(--white);
-        border: 2px solid #dc2626;
-        font-weight: 700;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    
-    .btn-delete:hover {
-        background: var(--white);
-        color: #dc2626;
-    }
-    
-    .btn-back {
-        padding: 0.75rem 2rem;
-        background: var(--white);
-        color: var(--primary);
-        border: 2px solid var(--primary);
-        font-weight: 700;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        text-decoration: none;
-        transition: all 0.3s;
-        display: inline-block;
-    }
-    
-    .btn-back:hover {
-        background: var(--primary);
-        color: var(--white);
-    }
+    .btn-edit,
+.btn-delete,
+.btn-back,
+.btn-submit,
+.btn-cancel,
+.btn-view,
+.btn-primary,
+.btn-secondary {
+    padding: 0.75rem 2rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border: 2px solid;
+    border-radius: 0.5rem;
+    font-family: inherit;
+    text-decoration: none;
+    line-height: 1.5;
+    min-height: 44px;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-edit {
+    background: var(--white);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-edit:hover {
+    background: var(--primary);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-delete {
+    background: #dc2626;
+    color: var(--white);
+    border-color: #dc2626;
+}
+
+.btn-delete:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220,38,38,0.3);
+}
+
+.btn-back,
+.btn-secondary {
+    background: var(--white);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-back:hover,
+.btn-secondary:hover {
+    background: var(--secondary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-submit,
+.btn-primary {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+.btn-submit:hover,
+.btn-primary:hover {
+    background: #000000;
+    border-color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.btn-cancel {
+    background: var(--white);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-cancel:hover {
+    background: var(--secondary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-view {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+.btn-view:hover {
+    background: #000000;
+    border-color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
     
     @media (max-width: 768px) {
         .article-title {
@@ -333,7 +386,7 @@
             <!-- Action Buttons (only for author and admin) -->
             @if(auth()->check() && (auth()->id() === $article->user_id || auth()->user()->isAdmin()))
                 <div class="article-actions">
-                    <a href="{{ route('articles.edit', $article) }}" class="btn-edit">Edit Article</a>
+                    <a href="{{ route('articles.edit', $article) }}" class="btn-edit">Edit</a>
                     
                     <form method="POST" action="{{ route('articles.destroy', $article) }}" 
                           onsubmit="return confirm('Are you sure you want to delete this article?')" 

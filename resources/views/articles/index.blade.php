@@ -205,7 +205,7 @@
                              class="article-image">
                     @else
                         <div class="article-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                            📝
+                        
                         </div>
                     @endif
                     
