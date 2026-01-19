@@ -111,5 +111,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/approvals/{type}/{id}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
 });
 
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
 // AUTH ROUTES (Laravel Breeze provides these)
 require __DIR__.'/auth.php';
