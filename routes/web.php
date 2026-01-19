@@ -9,12 +9,22 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-// Health check route for Railway
 Route::get('/health', function () {
-    return response()->json([
-        'status' => 'ok',
-        'timestamp' => now()
-    ], 200);
+    try {
+        // Check if app is running
+        return response()->json([
+            'status' => 'healthy',
+            'timestamp' => now()->toDateTimeString(),
+            'service' => config('app.name'),
+            'environment' => config('app.env'),
+            'debug' => config('app.debug')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'unhealthy',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
 
 // Redirect dashboard to home
