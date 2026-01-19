@@ -231,12 +231,10 @@
                     <option value="">Select a role</option>
                     <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>Regular User</option>
                     <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Administrator</option>
-                    <option value="author" {{ old('role') === 'author' ? 'selected' : '' }}>Content Author</option>
                 </select>
                 <div class="form-help">
                     • User: Can create and manage their own content<br>
                     • Admin: Full system access and permissions<br>
-                    • Author: Can publish content without approval
                 </div>
                 @error('role')
                     <div class="form-error">{{ $message }}</div>
