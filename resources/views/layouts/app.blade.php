@@ -90,9 +90,12 @@
             display: flex;
             gap: 1rem;
             align-items: center;
-            margin-left: 2rem;
-            padding-left: 2rem;
-            border-left: 1px solid var(--border);
+        }
+        
+        .nav-divider {
+            color: var(--border);
+            font-size: 0.8rem;
+            margin: 0 0.5rem;
         }
         
         .btn {
@@ -199,6 +202,16 @@
         }
         
         /* Responsive */
+        @media (max-width: 1024px) {
+            .header-container {
+                padding: 1rem;
+            }
+            
+            .main-nav {
+                gap: 1rem;
+            }
+        }
+        
         @media (max-width: 768px) {
             .header-container {
                 flex-direction: column;
@@ -208,18 +221,34 @@
             .main-nav {
                 flex-direction: column;
                 gap: 0.5rem;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-divider {
+                display: none;
             }
             
             .user-nav {
-                margin-left: 0;
-                padding-left: 0;
-                border-left: none;
-                padding-top: 1rem;
-                border-top: 1px solid var(--border);
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: center;
             }
             
             .footer-container {
                 grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .user-nav {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
     </style>
@@ -231,25 +260,34 @@
             <a href="{{ route('home') }}" class="site-logo">CONTENTLY</a>
             
             <nav class="main-nav">
+                <!-- Always visible navigation links -->
                 <a href="{{ route('articles.index') }}">Articles</a>
                 <a href="{{ route('books.index') }}">Books</a>
                 <a href="{{ route('images.index') }}">Images</a>
                 
-                @auth
-                    <a href="{{ route('my-content') }}">My Content</a>
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}">Admin</a>
-                    @endif
-                @endauth
+                <span class="nav-divider">|</span>
                 
                 <div class="user-nav">
                     @auth
-                        <span style="color: var(--text-light); font-size: 0.85rem;">{{ auth()->user()->name }}</span>
+                        <!-- User-specific links -->
+                        @if(!auth()->user()->isAdmin())
+                            <a href="{{ route('my-content') }}">My Content</a>
+                        @endif
+                        
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}">Admin</a>
+                        @endif
+                        
+                        <span style="color: var(--text-light); font-size: 0.85rem; white-space: nowrap;">
+                            {{ auth()->user()->name }}
+                        </span>
+                        
                         <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                             @csrf
                             <button type="submit" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Logout</button>
                         </form>
                     @else
+                        <!-- Public login/register -->
                         <a href="{{ route('login') }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Login</a>
                         <a href="{{ route('register') }}" class="btn btn-outline" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Register</a>
                     @endauth

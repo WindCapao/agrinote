@@ -240,6 +240,103 @@
         color: var(--white);
     }
     
+    /* Table Responsive Styles */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 1rem auto;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border);
+        max-width: 100%;
+        display: block;
+    }
+    
+    table {
+        width: 100%;
+        min-width: 600px;
+        border-collapse: collapse;
+        background: var(--white);
+        margin: 0 auto;
+    }
+    
+    table th {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.85rem;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 2px solid var(--primary);
+    }
+    
+    table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+        vertical-align: middle;
+    }
+    
+    table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    table tbody tr:hover {
+        background-color: rgba(var(--primary-rgb), 0.05);
+    }
+    
+    table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* Center table wrapper when table is smaller than container */
+    .table-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Prevent horizontal overflow on the entire page */
+    html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+    
+    .page-container,
+    .content-section {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Ensure images and other media don't cause overflow */
+    img,
+    .featured-image,
+    video,
+    iframe {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    /* Ensure long words/URLs break properly */
+    .article-body {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+    }
+    
+    /* Fix for potential overflow issues */
+    * {
+        box-sizing: border-box;
+    }
+    
+    .article-content,
+    .article-sidebar {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
     @media (max-width: 768px) {
         .page-title {
             font-size: 2.5rem;
@@ -252,6 +349,86 @@
         .page-actions {
             flex-direction: column;
             align-items: center;
+        }
+        
+        /* Mobile table adjustments */
+        .table-responsive {
+            margin: 1rem auto;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: flex-start;
+        }
+        
+        table {
+            min-width: 500px;
+        }
+        
+        table th,
+        table td {
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .table-responsive {
+            margin: 0.75rem auto;
+        }
+        
+        table {
+            min-width: 400px;
+        }
+        
+        table th,
+        table td {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .article-content,
+        .article-sidebar {
+            padding: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .page-header {
+            padding: 3rem 1rem 2rem;
+        }
+        
+        .content-section {
+            padding: 2rem 1rem;
+        }
+        
+        .article-content,
+        .article-sidebar {
+            padding: 1rem;
+        }
+        
+        .table-responsive {
+            margin: 0.5rem auto;
+        }
+        
+        table {
+            min-width: 350px;
+        }
+        
+        table th,
+        table td {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* For extra small screens */
+    @media (max-width: 360px) {
+        table {
+            min-width: 300px;
+        }
+        
+        table th,
+        table td {
+            padding: 0.4rem;
+            font-size: 0.8rem;
         }
     }
 </style>
@@ -282,6 +459,38 @@
             
             <div class="article-body">
                 {!! nl2br(e($article->content)) !!}
+                
+                <!-- Example table in content - if you have tables -->
+                @if(false) <!-- Change to true if you have tables -->
+                <div class="table-wrapper">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Column 1</th>
+                                    <th>Column 2</th>
+                                    <th>Column 3</th>
+                                    <th>Column 4</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Data 1</td>
+                                    <td>Data 2</td>
+                                    <td>Data 3</td>
+                                    <td>Data 4</td>
+                                </tr>
+                                <tr>
+                                    <td>Data 5</td>
+                                    <td>Data 6</td>
+                                    <td>Data 7</td>
+                                    <td>Data 8</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
         
@@ -329,7 +538,37 @@
                 </div>
             @endif
             
-            
+            <!-- Example table in sidebar -->
+            @if(false) <!-- Change to true if you have tables in sidebar -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Related Articles</h3>
+                <div class="table-wrapper">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sample Article 1</td>
+                                    <td><span class="status-badge status-published">Published</span></td>
+                                    <td>2024-01-20</td>
+                                </tr>
+                                <tr>
+                                    <td>Sample Article 2</td>
+                                    <td><span class="status-badge status-draft">Draft</span></td>
+                                    <td>2024-01-19</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>
