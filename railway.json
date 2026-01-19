@@ -5,6 +5,6 @@
     "buildCommand": "composer install --optimize-autoloader --no-dev --no-interaction && npm ci && npm run build"
   },
   "deploy": {
-    "startCommand": "php artisan config:clear && php artisan cache:clear && php -S 0.0.0.0:$PORT -t public"
+    "startCommand": "php artisan migrate --force || true && php artisan config:clear && php artisan cache:clear && php -S 0.0.0.0:$PORT -t public"
   }
 }
