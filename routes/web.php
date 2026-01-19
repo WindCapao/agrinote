@@ -9,6 +9,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
+// Health check route for Railway
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()
+    ], 200);
+});
+
 // Redirect dashboard to home
 Route::get('/dashboard', function () {
     return redirect()->route('home');
@@ -111,8 +119,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/approvals/{type}/{id}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
 });
 
-Route::get('/health', function () {
-    return response()->json(['status' => 'ok']);
-});
+
 // AUTH ROUTES (Laravel Breeze provides these)
 require __DIR__.'/auth.php';
