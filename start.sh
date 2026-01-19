@@ -1,7 +1,13 @@
 #!/bin/bash
 
-# Wait a moment for everything to initialize
-sleep 2
+# Wait for environment variables to be set
+sleep 5
+
+# Check if MySQL variables are set
+if [ -z "${MYSQLHOST}" ] || [ "${MYSQLHOST}" = "\${MYSQLHOST}" ]; then
+    echo "WARNING: MySQL database not configured. Skipping migrations."
+    NO_DB=true
+fi
 
 # Generate application key if not set
 if [ -z "${APP_KEY}" ] || [ "${APP_KEY}" = "" ]; then
@@ -9,21 +15,13 @@ if [ -z "${APP_KEY}" ] || [ "${APP_KEY}" = "" ]; then
     php artisan key:generate --force
 fi
 
-# Run database migrations
-echo "Running database migrations..."
-php artisan migrate --force
-
-# Clear and cache config
-echo "Caching configuration..."
-php artisan config:cache
-
-# Clear and cache routes
-echo "Caching routes..."
-php artisan route:cache
-
-# Clear and cache views
-echo "Caching views..."
-php artisan view:cache
+# Only run migrations if database is configured
+if [ -z "$NO_DB" ]; then
+    echo "Running database migrations..."
+    php artisan migrate --force
+else
+    echo "Skipping database migrations (no database configured)"
+fi
 
 # Start the application
 echo "Starting Laravel server on port ${PORT}..."
