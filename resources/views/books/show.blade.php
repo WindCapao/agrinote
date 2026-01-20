@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $book->title . ' - Admin')
+@section('title', $book->title)
 
 @section('content')
 <style>
@@ -206,114 +206,61 @@
         color: var(--white);
     }
     
-    .btn-edit,
-.btn-delete,
-.btn-back,
-.btn-submit,
-.btn-cancel,
-.btn-view,
-.btn-primary,
-.btn-secondary {
-    padding: 0.75rem 2rem;
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: all 0.3s ease;
-    display: inline-block;
-    border: 2px solid;
-    border-radius: 0.5rem;
-    font-family: inherit;
-    text-decoration: none;
-    line-height: 1.5;
-    min-height: 44px;
-    box-sizing: border-box;
-    cursor: pointer;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.btn-edit {
-    background: var(--white);
-    color: var(--primary);
-    border-color: var(--primary);
-}
-
-.btn-edit:hover {
-    background: var(--primary);
-    color: var(--white);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.btn-delete {
-    background: #dc2626;
-    color: var(--white);
-    border-color: #dc2626;
-}
-
-.btn-delete:hover {
-    background: #b91c1c;
-    border-color: #b91c1c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(220,38,38,0.3);
-}
-
-.btn-back,
-.btn-secondary {
-    background: var(--white);
-    color: var(--primary);
-    border-color: var(--primary);
-}
-
-.btn-back:hover,
-.btn-secondary:hover {
-    background: var(--secondary);
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.btn-submit,
-.btn-primary {
-    background: var(--primary);
-    color: var(--white);
-    border-color: var(--primary);
-}
-
-.btn-submit:hover,
-.btn-primary:hover {
-    background: #000000;
-    border-color: #000000;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-.btn-cancel {
-    background: var(--white);
-    color: var(--primary);
-    border-color: var(--primary);
-}
-
-.btn-cancel:hover {
-    background: var(--secondary);
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.btn-view {
-    background: var(--primary);
-    color: var(--white);
-    border-color: var(--primary);
-}
-
-.btn-view:hover {
-    background: #000000;
-    border-color: #000000;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
+    .btn-edit {
+        padding: 0.75rem 2rem;
+        background: var(--primary);
+        color: var(--white);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-edit:hover {
+        background: var(--white);
+        color: var(--primary);
+    }
+    
+    .btn-delete {
+        padding: 0.75rem 2rem;
+        background: #dc2626;
+        color: var(--white);
+        border: 2px solid #dc2626;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-delete:hover {
+        background: var(--white);
+        color: #dc2626;
+    }
+    
+    .btn-back {
+        padding: 0.75rem 2rem;
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+    
+    .btn-back:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
     
     @media (max-width: 768px) {
         .page-title {
@@ -334,10 +281,15 @@
 <div class="page-header">
     <div class="page-container">
         <h1 class="page-title">{{ $book->title }}</h1>
-        <p class="page-subtitle">Book Details - Admin View</p>
+        <p class="page-subtitle">Book Details</p>
         
         <div class="page-actions">
-            <a href="{{ route('admin.books.index') }}" class="btn-back">Back to Books</a>
+            <a href="{{ route('books.index') }}" class="btn-back">Back to Books</a>
+            @auth
+                @if(Auth::id() === $book->user_id)
+                    <a href="{{ route('books.edit', $book) }}" class="btn-edit">Edit Book</a>
+                @endif
+            @endauth
         </div>
     </div>
 </div>
@@ -408,15 +360,13 @@
                 </div>
                 
                 <div class="info-item">
-                    <span class="info-label">Created</span>
-                    <div class="info-value">{{ $book->created_at->format('F d, Y') }}</div>
-                    <div style="font-size: 0.95rem; color: var(--text-light);">{{ $book->created_at->format('g:i A') }}</div>
+                    <span class="info-label">Added by</span>
+                    <div class="info-value">{{ $book->user->name ?? 'Unknown' }}</div>
                 </div>
                 
                 <div class="info-item">
-                    <span class="info-label">Last Updated</span>
-                    <div class="info-value">{{ $book->updated_at->format('F d, Y') }}</div>
-                    <div style="font-size: 0.95rem; color: var(--text-light);">{{ $book->updated_at->format('g:i A') }}</div>
+                    <span class="info-label">Published</span>
+                    <div class="info-value">{{ $book->created_at->format('F d, Y') }}</div>
                 </div>
             </div>
             
@@ -431,61 +381,46 @@
                 </div>
             @endif
             
-            <!-- Quick Actions -->
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Quick Actions</h3>
-                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    @if($book->status === 'draft')
-                        <form method="POST" action="{{ route('admin.books.update', $book) }}" style="display: inline;">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="status" value="pending">
-                            <input type="hidden" name="title" value="{{ $book->title }}">
-                            <input type="hidden" name="author" value="{{ $book->author }}">
-                            <input type="hidden" name="description" value="{{ $book->description }}">
-                            <input type="hidden" name="categories[]" value="{{ $book->categories->first()->id ?? '' }}">
-                            <button type="submit" class="btn-edit" style="width: 100%;">Submit for Review</button>
-                        </form>
-                    @endif
-                    
-                    @if($book->status === 'pending')
-                        <form method="POST" action="{{ route('admin.books.update', $book) }}" style="display: inline;">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="status" value="published">
-                            <input type="hidden" name="title" value="{{ $book->title }}">
-                            <input type="hidden" name="author" value="{{ $book->author }}">
-                            <input type="hidden" name="description" value="{{ $book->description }}">
-                            <input type="hidden" name="categories[]" value="{{ $book->categories->first()->id ?? '' }}">
-                            <button type="submit" class="btn-edit" style="width: 100%; background: #059669; border-color: #059669;">Publish Now</button>
-                        </form>
-                        
-                        <form method="POST" action="{{ route('admin.books.update', $book) }}" style="display: inline;">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="status" value="rejected">
-                            <input type="hidden" name="title" value="{{ $book->title }}">
-                            <input type="hidden" name="author" value="{{ $book->author }}">
-                            <input type="hidden" name="description" value="{{ $book->description }}">
-                            <input type="hidden" name="categories[]" value="{{ $book->categories->first()->id ?? '' }}">
-                            <button type="submit" class="btn-edit" style="width: 100%; background: #dc2626; border-color: #dc2626;">Reject</button>
-                        </form>
-                    @endif
-                    
-                    @if($book->status === 'published')
-                        <form method="POST" action="{{ route('admin.books.update', $book) }}" style="display: inline;">
-                            @csrf
-                            @method('PUT')
-                            <input type="hidden" name="status" value="draft">
-                            <input type="hidden" name="title" value="{{ $book->title }}">
-                            <input type="hidden" name="author" value="{{ $book->author }}">
-                            <input type="hidden" name="description" value="{{ $book->description }}">
-                            <input type="hidden" name="categories[]" value="{{ $book->categories->first()->id ?? '' }}">
-                            <button type="submit" class="btn-edit" style="width: 100%;">Move to Draft</button>
-                        </form>
-                    @endif
-                </div>
-            </div>
+            <!-- Actions for book owner -->
+            @auth
+                @if(Auth::id() === $book->user_id)
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">Your Actions</h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            @if($book->status === 'draft')
+                                <form method="POST" action="{{ route('books.update', $book) }}" style="display: inline;">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="status" value="pending">
+                                    <input type="hidden" name="title" value="{{ $book->title }}">
+                                    <input type="hidden" name="author" value="{{ $book->author }}">
+                                    <input type="hidden" name="description" value="{{ $book->description }}">
+                                    <input type="hidden" name="categories[]" value="{{ $book->categories->first()->id ?? '' }}">
+                                    <button type="submit" class="btn-edit" style="width: 100%;">Submit for Review</button>
+                                </form>
+                            @endif
+                            
+                            @if($book->status === 'pending')
+                                <div style="padding: 1rem; background: #fef3c7; border-radius: 0.5rem; text-align: center;">
+                                    <p style="margin: 0; color: #92400e; font-weight: 600;">Awaiting approval from admin</p>
+                                </div>
+                            @endif
+                            
+                            @if($book->status === 'rejected')
+                                <div style="padding: 1rem; background: #fee2e2; border-radius: 0.5rem; text-align: center;">
+                                    <p style="margin: 0; color: #991b1b; font-weight: 600;">Your book was rejected. Please edit and resubmit.</p>
+                                </div>
+                            @endif
+                            
+                            <form method="POST" action="{{ route('books.destroy', $book) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-delete" style="width: 100%;">Delete Book</button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+            @endauth
         </div>
     </div>
 </div>
@@ -497,26 +432,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     quickActionForms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            const status = this.querySelector('input[name="status"]').value;
-            let message = '';
-            
-            switch(status) {
-                case 'pending':
-                    message = 'Submit this book for review?';
-                    break;
-                case 'published':
-                    message = 'Publish this book now?';
-                    break;
-                case 'rejected':
-                    message = 'Reject this book?';
-                    break;
-                case 'draft':
-                    message = 'Move this book to draft?';
-                    break;
-            }
-            
-            if (message && !confirm(message)) {
-                e.preventDefault();
+            const status = this.querySelector('input[name="status"]');
+            if (status && status.value === 'pending') {
+                if (!confirm('Submit this book for review?')) {
+                    e.preventDefault();
+                }
             }
         });
     });

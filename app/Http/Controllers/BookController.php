@@ -91,9 +91,16 @@ class BookController extends Controller
                 ? 'Book submitted for approval!' 
                 : 'Book created successfully!';
 
-            return redirect()
-                ->route('books.show', $book)
-                ->with('success', $message);
+            // FIXED: Redirect based on user role
+            if (Auth::user()->isAdmin()) {
+                return redirect()
+                    ->route('admin.books.show', $book)  // Admin route
+                    ->with('success', $message);
+            } else {
+                return redirect()
+                    ->route('books.show', $book)  // Regular user route
+                    ->with('success', $message);
+            }
                 
         } catch (Exception $e) {
             DB::rollBack();
@@ -194,9 +201,16 @@ class BookController extends Controller
                 ? 'Book submitted for approval!' 
                 : 'Book updated successfully!';
 
-            return redirect()
-                ->route('books.show', $book)
-                ->with('success', $message);
+            // FIXED: Redirect based on user role
+            if (Auth::user()->isAdmin()) {
+                return redirect()
+                    ->route('admin.books.show', $book)  // Admin route
+                    ->with('success', $message);
+            } else {
+                return redirect()
+                    ->route('books.show', $book)  // Regular user route
+                    ->with('success', $message);
+            }
                 
         } catch (Exception $e) {
             DB::rollBack();

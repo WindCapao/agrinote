@@ -256,7 +256,7 @@
                              class="book-image">
                     @else
                         <div class="book-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                            📚
+                            
                         </div>
                     @endif
                     
@@ -275,19 +275,16 @@
                         <div class="book-details">
                             @if($book->publisher)
                                 <div class="book-detail">
-                                    <span>📖</span>
                                     <span>{{ $book->publisher }}</span>
                                 </div>
                             @endif
                             @if($book->publication_year)
                                 <div class="book-detail">
-                                    <span>📅</span>
                                     <span>{{ $book->publication_year }}</span>
                                 </div>
                             @endif
                             @if($book->pages)
                                 <div class="book-detail">
-                                    <span>📄</span>
                                     <span>{{ $book->pages }} pages</span>
                                 </div>
                             @endif
